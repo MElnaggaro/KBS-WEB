@@ -14,18 +14,18 @@
     let animationId;
 
     const CONFIG = {
-        particleCount: 120,
-        maxSpeed: 0.3,
-        particleSize: { min: 1, max: 2.5 },
-        connectionDistance: 160,
-        mouseRepelRadius: 180,
-        mouseRepelForce: 0.08,
-        mouseAttractRadius: 300,
+        particleCount: 250,
+        maxSpeed: 0.4,
+        particleSize: { min: 1.5, max: 3.5 },
+        connectionDistance: 190,
+        mouseRepelRadius: 220,
+        mouseRepelForce: 0.1,
+        mouseAttractRadius: 400,
         baseColor: { r: 255, g: 46, b: 46 },     // #FF2E2E (Secondary glow red)
         accentColor: { r: 255, g: 107, b: 107 },  // #FF6B6B (Highlight red)
         dimColor: { r: 139, g: 0, b: 0 },         // #8B0000 (Deep blood red)
-        lineOpacity: 0.08,
-        particleOpacity: { min: 0.1, max: 0.5 },
+        lineOpacity: 0.25,
+        particleOpacity: { min: 0.3, max: 0.8 },
     };
 
     function resize() {

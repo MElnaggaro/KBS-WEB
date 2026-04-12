@@ -1,4 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // ═════════════════════════════════════════════
+    // EMERGENCY MODE CONTROLLER
+    // ═════════════════════════════════════════════
+    let emergencyActive = false;
+    const emergencyAlert = document.getElementById('emergency-alert');
+
+    function activateEmergencyMode() {
+        if (emergencyActive) return;
+        emergencyActive = true;
+        document.body.classList.add('emergency-mode');
+        // Slide the alert banner in
+        requestAnimationFrame(() => {
+            emergencyAlert.classList.add('alert-visible');
+        });
+    }
+
+    function deactivateEmergencyMode() {
+        if (!emergencyActive) return;
+        emergencyActive = false;
+        document.body.classList.remove('emergency-mode');
+        emergencyAlert.classList.remove('alert-visible');
+    }
+
     
     // --- Navigation & Scrolling ---
     const startBtn = document.getElementById('start-btn');
@@ -26,6 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const urgencyCard = document.getElementById('urgency-card');
             urgencyCard.className = 'result-card dramatic-reveal';
         }, 500);
+
+        // Deactivate emergency mode if active
+        deactivateEmergencyMode();
 
         // Reset 3D heart to calm state
         window.dispatchEvent(new CustomEvent('diagnosisReset'));
@@ -78,7 +105,16 @@ document.addEventListener('DOMContentLoaded', () => {
         renderResults(result);
 
         // ═══════════════════════════════════
-        // 4. UPDATE 3D HEART VISUALIZATION
+        // 4. EMERGENCY MODE CHECK
+        // ═══════════════════════════════════
+        if (result.urgency.label === 'CRITICAL') {
+            activateEmergencyMode();
+        } else {
+            deactivateEmergencyMode();
+        }
+
+        // ═══════════════════════════════════
+        // 5. UPDATE 3D HEART VISUALIZATION
         // ═══════════════════════════════════
         window.dispatchEvent(new CustomEvent('diagnosisResult', {
             detail: {

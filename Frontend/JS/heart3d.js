@@ -111,10 +111,10 @@ const SEVERITY_PRESETS = {
         glowLightIntensity: 1.5,
     },
     CRITICAL: {
-        speed: 2.2,
-        glow: 0.9,
-        vibration: 0.012,
-        glowLightIntensity: 2.5,
+        speed: 3.0,
+        glow: 1.4,
+        vibration: 0.018,
+        glowLightIntensity: 3.5,
     },
     IDLE: {
         speed: 0,
@@ -450,10 +450,11 @@ function animate() {
 
         // ── 5. CAMERA SHAKE — CRITICAL only ──
         if (heartTarget.speed >= 2.0) {
-            // Subtle sinusoidal camera shake for dramatic critical feel
-            const shakeIntensity = (heartState.speed - 1.8) * 0.008;
+            // Intensified sinusoidal camera shake for emergency feel
+            const shakeIntensity = (heartState.speed - 1.5) * 0.012;
             camera.position.x = baseCameraPos.x + Math.sin(time * 23.7) * shakeIntensity;
             camera.position.y = baseCameraPos.y + Math.sin(time * 19.3) * shakeIntensity;
+            camera.position.z = baseCameraPos.z + Math.sin(time * 17.1) * shakeIntensity * 0.3;
         } else {
             // Smoothly return camera to base position
             camera.position.x += (baseCameraPos.x - camera.position.x) * 0.05;

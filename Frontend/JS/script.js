@@ -51,12 +51,108 @@ document.addEventListener('DOMContentLoaded', () => {
             urgencyCard.className = 'result-card dramatic-reveal';
         }, 500);
 
+        // Reset Multi-step Form
+        currentStep = 1;
+        document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
+        document.getElementById('step-1').style.display = 'block';
+        
+        // Reset Progress UI
+        document.querySelectorAll('.progress-step').forEach((prog, idx) => {
+            prog.className = idx === 0 ? 'progress-step active' : 'progress-step';
+        });
+        document.querySelectorAll('.progress-line').forEach(line => {
+            line.classList.remove('filled');
+        });
+        document.querySelectorAll('.step-error').forEach(e => e.style.display = 'none');
+        document.querySelectorAll('input[required]').forEach(input => input.style.borderColor = 'var(--color-border)');
+
         // Deactivate emergency mode if active
         deactivateEmergencyMode();
 
         // Reset 3D heart to calm state
         window.dispatchEvent(new CustomEvent('diagnosisReset'));
     });
+
+    // ═════════════════════════════════════════════
+    // MULTI-STEP FORM CONTROLLER
+    // ═════════════════════════════════════════════
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    function validateStep(step) {
+        const stepEl = document.getElementById(`step-${step}`);
+        const inputs = stepEl.querySelectorAll('input[required]');
+        let isValid = true;
+        
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                isValid = false;
+                input.style.borderColor = 'var(--urgency-critical)';
+                input.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.2)';
+            } else {
+                input.style.borderColor = 'var(--color-border)';
+                input.style.boxShadow = 'none';
+            }
+        });
+
+        const errorEl = document.getElementById(`error-${step}`);
+        if (!isValid && errorEl) {
+            errorEl.style.display = 'block';
+        } else if (errorEl) {
+            errorEl.style.display = 'none';
+        }
+
+        return isValid;
+    }
+
+    window.goToStep = function(nextStep) {
+        // Validate current step if moving forward
+        if (nextStep > currentStep) {
+            if (!validateStep(currentStep)) return;
+        }
+
+        // Update progress bar UI
+        for (let i = 1; i <= totalSteps; i++) {
+            const prog = document.getElementById(`prog-${i}`);
+            if (i < nextStep) {
+                prog.className = 'progress-step completed';
+            } else if (i === nextStep) {
+                prog.className = 'progress-step active';
+            } else {
+                prog.className = 'progress-step';
+            }
+        }
+
+        // Update Progress Lines
+        const lines = document.querySelectorAll('.progress-line');
+        lines.forEach((line, index) => {
+            if (index < nextStep - 1) {
+                line.classList.add('filled');
+            } else {
+                line.classList.remove('filled');
+            }
+        });
+
+        const oldStepEl = document.getElementById(`step-${currentStep}`);
+        const newStepEl = document.getElementById(`step-${nextStep}`);
+
+        // Hide old, show new with GSAP
+        // If moving forward: slide in from right
+        // If moving backward: slide in from left
+        const xOffset = nextStep > currentStep ? 50 : -50;
+        
+        oldStepEl.style.display = 'none';
+        newStepEl.style.display = 'block';
+
+        if (typeof gsap !== 'undefined') {
+            gsap.fromTo(newStepEl, 
+                { opacity: 0, x: xOffset }, 
+                { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }
+            );
+        }
+
+        currentStep = nextStep;
+    };
 
     // --- Expert System Integration ---
     const form = document.getElementById('diagnosis-form');

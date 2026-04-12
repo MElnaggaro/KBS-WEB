@@ -553,18 +553,130 @@ h3 {
 	border-radius: var(--border-radius-lg);
 	padding: 3rem;
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+	max-width: 800px;
+	margin: 0 auto;
 }
 
-.form-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	gap: 3rem;
+/* =============================================
+   MULTI-STEP FORM UI
+   ============================================= */
+.form-progress {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 2.5rem;
+	padding-bottom: 2rem;
+	border-bottom: 1px solid var(--color-border);
+}
+
+.progress-step {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--color-text-dim);
+	transition: var(--transition-smooth);
+	opacity: 0.5;
+	position: relative;
+	z-index: 2;
+}
+
+.progress-step.active {
+	color: var(--color-text-main);
+	opacity: 1;
+	transform: scale(1.05);
+}
+
+.progress-step.completed {
+	color: var(--color-primary);
+	opacity: 0.8;
+}
+
+.step-icon {
+	font-size: 1.8rem;
+	width: 60px;
+	height: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.5);
+	border-radius: 50%;
+	border: 1px solid var(--color-border);
+	transition: var(--transition-smooth);
+}
+
+.active .step-icon {
+	border-color: var(--color-primary);
+	box-shadow: 0 0 15px var(--color-primary-glow);
+	background: rgba(255, 26, 26, 0.1);
+}
+
+.completed .step-icon {
+	border-color: var(--color-primary);
+	background: rgba(255, 26, 26, 0.05);
+}
+
+.step-text {
+	font-size: 0.85rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.progress-line {
+	flex: 1;
+	height: 2px;
+	background: var(--color-border);
+	margin: 0 1rem;
+	margin-bottom: 1.5rem; /* align roughly with center of circles */
+	position: relative;
+	z-index: 1;
+}
+
+.progress-line::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 0%;
+	background: var(--color-primary);
+	transition: width 0.5s ease;
+}
+
+.progress-line.filled::after {
+	width: 100%;
+}
+
+.step-actions {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 2.5rem;
+	border-top: 1px solid var(--color-border);
+	padding-top: 2rem;
+}
+
+.step-error {
+	color: var(--urgency-critical);
+	font-size: 0.85rem;
+	margin-top: 1rem;
+	display: none;
+	text-align: right;
+	font-weight: 500;
+}
+
+/* Remove original form-grid and category gap for stacked */
+.form-step-container {
+	position: relative;
+	min-height: 350px; /* Prevent huge jumps in height */
 }
 
 .form-category {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
+	gap: 1.25rem;
+	max-width: 600px;
+	margin: 0 auto;
 }
 
 .input-group {
@@ -583,12 +695,13 @@ input[type="number"] {
 	background: rgba(0, 0, 0, 0.3);
 	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius-md);
-	padding: 0.8rem 1rem;
+	padding: 1rem 1.2rem;
 	color: white;
 	font-family: inherit;
-	font-size: 1rem;
+	font-size: 1.1rem;
 	transition: var(--transition-smooth);
 	outline: none;
+	width: 100%;
 }
 
 input[type="text"]:focus,

@@ -94,117 +94,154 @@
                 <h2 class="section-title scroll-reveal">Patient Data Entry</h2>
                 
                 <form id="diagnosis-form" class="medical-card scroll-reveal">
-                    <div class="form-grid">
-                        
-                        <!-- Symptoms Category -->
-                        <div class="form-category">
-                            <h3>A. Symptoms</h3>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="sym-sob" name="sym-sob">
-                                    <span class="custom-checkbox"></span>
-                                    Shortness of breath
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="sym-cp" name="sym-cp">
-                                    <span class="custom-checkbox"></span>
-                                    Chest pain
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="sym-fatigue" name="sym-fatigue">
-                                    <span class="custom-checkbox"></span>
-                                    Fatigue
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="sym-edema" name="sym-edema">
-                                    <span class="custom-checkbox"></span>
-                                    Edema
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="sym-cough" name="sym-cough">
-                                    <span class="custom-checkbox"></span>
-                                    Persistent cough
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="sym-low-activity" name="sym-low-activity">
-                                    <span class="custom-checkbox"></span>
-                                    Reduced physical activity tolerance
-                                </label>
-                            </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="form-progress">
+                        <div class="progress-step active" id="prog-1">
+                            <span class="step-icon">🩺</span>
+                            <span class="step-text">Symptoms</span>
                         </div>
-
-                        <!-- Vital Signs Category -->
-                        <div class="form-category">
-                            <h3>B. Vital Signs</h3>
-                            <div class="input-group">
-                                <label for="vital-bp">Blood Pressure — Systolic (mmHg)</label>
-                                <input type="number" id="vital-bp" name="vital-bp" placeholder="e.g. 120" min="40" max="300" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="vital-hr">Heart Rate (bpm)</label>
-                                <input type="number" id="vital-hr" name="vital-hr" placeholder="e.g. 75" min="20" max="250" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="vital-rr">Respiratory Rate (breaths/min)</label>
-                                <input type="number" id="vital-rr" name="vital-rr" placeholder="e.g. 16" min="4" max="60" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="vital-o2">Oxygen Saturation (%)</label>
-                                <input type="number" id="vital-o2" name="vital-o2" placeholder="e.g. 98" min="50" max="100" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="vital-hb">Hemoglobin (g/dL)</label>
-                                <input type="number" id="vital-hb" name="vital-hb" placeholder="e.g. 14" min="3" max="25" step="0.1" required>
-                            </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step" id="prog-2">
+                            <span class="step-icon">❤️</span>
+                            <span class="step-text">Vitals</span>
                         </div>
-
-                        <!-- Background Category -->
-                        <div class="form-category">
-                            <h3>C. Background</h3>
-                            <div class="input-group">
-                                <label for="bg-age">Age</label>
-                                <input type="number" id="bg-age" name="bg-age" placeholder="e.g. 60" min="1" max="120" required>
-                            </div>
-                            <div class="checkbox-group bg-checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="bg-ht" name="bg-ht">
-                                    <span class="custom-checkbox"></span>
-                                    Hypertension
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="bg-diabetes" name="bg-diabetes">
-                                    <span class="custom-checkbox"></span>
-                                    Diabetes
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="bg-heart-disease" name="bg-heart-disease">
-                                    <span class="custom-checkbox"></span>
-                                    Prior heart disease
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="bg-obesity" name="bg-obesity">
-                                    <span class="custom-checkbox"></span>
-                                    Obesity
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="bg-smoke" name="bg-smoke">
-                                    <span class="custom-checkbox"></span>
-                                    Smoking
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="bg-family" name="bg-family">
-                                    <span class="custom-checkbox"></span>
-                                    Family history of cardiac disease
-                                </label>
-                            </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step" id="prog-3">
+                            <span class="step-icon">🧠</span>
+                            <span class="step-text">Background</span>
                         </div>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary analyze-btn">
-                            <span class="btn-text">Analyze Patient Data</span>
-                            <span class="btn-glow"></span>
-                        </button>
+                    <div class="form-step-container">
+                        
+                        <!-- Step 1: Symptoms -->
+                        <div class="step" id="step-1">
+                            <div class="form-category">
+                                <h3>A. Symptoms</h3>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="sym-sob" name="sym-sob">
+                                        <span class="custom-checkbox"></span>
+                                        Shortness of breath
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="sym-cp" name="sym-cp">
+                                        <span class="custom-checkbox"></span>
+                                        Chest pain
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="sym-fatigue" name="sym-fatigue">
+                                        <span class="custom-checkbox"></span>
+                                        Fatigue
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="sym-edema" name="sym-edema">
+                                        <span class="custom-checkbox"></span>
+                                        Edema
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="sym-cough" name="sym-cough">
+                                        <span class="custom-checkbox"></span>
+                                        Persistent cough
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="sym-low-activity" name="sym-low-activity">
+                                        <span class="custom-checkbox"></span>
+                                        Reduced physical activity tolerance
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="step-error" id="error-1">Please fill in all required fields.</div>
+                            <div class="step-actions">
+                                <div></div> <!-- Spacer for flex layout -->
+                                <button type="button" class="btn-primary" onclick="goToStep(2)">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Vital Signs -->
+                        <div class="step" id="step-2" style="display: none;">
+                            <div class="form-category">
+                                <h3>B. Vital Signs</h3>
+                                <div class="input-group">
+                                    <label for="vital-bp">Blood Pressure — Systolic (mmHg)</label>
+                                    <input type="number" id="vital-bp" name="vital-bp" placeholder="e.g. 120" min="40" max="300" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="vital-hr">Heart Rate (bpm)</label>
+                                    <input type="number" id="vital-hr" name="vital-hr" placeholder="e.g. 75" min="20" max="250" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="vital-rr">Respiratory Rate (breaths/min)</label>
+                                    <input type="number" id="vital-rr" name="vital-rr" placeholder="e.g. 16" min="4" max="60" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="vital-o2">Oxygen Saturation (%)</label>
+                                    <input type="number" id="vital-o2" name="vital-o2" placeholder="e.g. 98" min="50" max="100" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="vital-hb">Hemoglobin (g/dL)</label>
+                                    <input type="number" id="vital-hb" name="vital-hb" placeholder="e.g. 14" min="3" max="25" step="0.1" required>
+                                </div>
+                            </div>
+                            <div class="step-error" id="error-2">Please fill in all required fields properly.</div>
+                            <div class="step-actions dual-actions">
+                                <button type="button" class="btn-secondary" onclick="goToStep(1)">Back</button>
+                                <button type="button" class="btn-primary" onclick="goToStep(3)">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Background -->
+                        <div class="step" id="step-3" style="display: none;">
+                            <div class="form-category">
+                                <h3>C. Background</h3>
+                                <div class="input-group">
+                                    <label for="bg-age">Age</label>
+                                    <input type="number" id="bg-age" name="bg-age" placeholder="e.g. 60" min="1" max="120" required>
+                                </div>
+                                <div class="checkbox-group bg-checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="bg-ht" name="bg-ht">
+                                        <span class="custom-checkbox"></span>
+                                        Hypertension
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="bg-diabetes" name="bg-diabetes">
+                                        <span class="custom-checkbox"></span>
+                                        Diabetes
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="bg-heart-disease" name="bg-heart-disease">
+                                        <span class="custom-checkbox"></span>
+                                        Prior heart disease
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="bg-obesity" name="bg-obesity">
+                                        <span class="custom-checkbox"></span>
+                                        Obesity
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="bg-smoke" name="bg-smoke">
+                                        <span class="custom-checkbox"></span>
+                                        Smoking
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="bg-family" name="bg-family">
+                                        <span class="custom-checkbox"></span>
+                                        Family history of cardiac disease
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="step-error" id="error-3">Please provide valid age.</div>
+                            <div class="step-actions dual-actions">
+                                <button type="button" class="btn-secondary" onclick="goToStep(2)">Back</button>
+                                <button type="submit" class="btn-primary analyze-btn">
+                                    <span class="btn-text">Analyze Patient Data</span>
+                                    <span class="btn-glow"></span>
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
             </div>

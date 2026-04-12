@@ -110,6 +110,16 @@
                                     <span class="custom-checkbox"></span>
                                     Edema
                                 </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sym-cough" name="sym-cough">
+                                    <span class="custom-checkbox"></span>
+                                    Persistent cough
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sym-low-activity" name="sym-low-activity">
+                                    <span class="custom-checkbox"></span>
+                                    Reduced physical activity tolerance
+                                </label>
                             </div>
                         </div>
 
@@ -117,16 +127,24 @@
                         <div class="form-category">
                             <h3>B. Vital Signs</h3>
                             <div class="input-group">
-                                <label for="vital-bp">Blood Pressure (mmHg)</label>
-                                <input type="text" id="vital-bp" name="vital-bp" placeholder="e.g. 120/80" required>
+                                <label for="vital-bp">Blood Pressure — Systolic (mmHg)</label>
+                                <input type="number" id="vital-bp" name="vital-bp" placeholder="e.g. 120" min="40" max="300" required>
                             </div>
                             <div class="input-group">
                                 <label for="vital-hr">Heart Rate (bpm)</label>
-                                <input type="number" id="vital-hr" name="vital-hr" placeholder="e.g. 75" required>
+                                <input type="number" id="vital-hr" name="vital-hr" placeholder="e.g. 75" min="20" max="250" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="vital-rr">Respiratory Rate (breaths/min)</label>
+                                <input type="number" id="vital-rr" name="vital-rr" placeholder="e.g. 16" min="4" max="60" required>
                             </div>
                             <div class="input-group">
                                 <label for="vital-o2">Oxygen Saturation (%)</label>
-                                <input type="number" id="vital-o2" name="vital-o2" placeholder="e.g. 98" required>
+                                <input type="number" id="vital-o2" name="vital-o2" placeholder="e.g. 98" min="50" max="100" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="vital-hb">Hemoglobin (g/dL)</label>
+                                <input type="number" id="vital-hb" name="vital-hb" placeholder="e.g. 14" min="3" max="25" step="0.1" required>
                             </div>
                         </div>
 
@@ -135,33 +153,39 @@
                             <h3>C. Background</h3>
                             <div class="input-group">
                                 <label for="bg-age">Age</label>
-                                <input type="number" id="bg-age" name="bg-age" placeholder="e.g. 60" required>
+                                <input type="number" id="bg-age" name="bg-age" placeholder="e.g. 60" min="1" max="120" required>
                             </div>
-                            <div class="radio-group">
-                                <span class="group-label">Hypertension</span>
-                                <div class="radio-options">
-                                    <label class="radio-label">
-                                        <input type="radio" name="bg-ht" value="yes" required>
-                                        <span class="custom-radio"></span> Yes
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="bg-ht" value="no">
-                                        <span class="custom-radio"></span> No
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="radio-group">
-                                <span class="group-label">Smoking</span>
-                                <div class="radio-options">
-                                    <label class="radio-label">
-                                        <input type="radio" name="bg-smoke" value="yes" required>
-                                        <span class="custom-radio"></span> Yes
-                                    </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="bg-smoke" value="no">
-                                        <span class="custom-radio"></span> No
-                                    </label>
-                                </div>
+                            <div class="checkbox-group bg-checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="bg-ht" name="bg-ht">
+                                    <span class="custom-checkbox"></span>
+                                    Hypertension
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="bg-diabetes" name="bg-diabetes">
+                                    <span class="custom-checkbox"></span>
+                                    Diabetes
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="bg-heart-disease" name="bg-heart-disease">
+                                    <span class="custom-checkbox"></span>
+                                    Prior heart disease
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="bg-obesity" name="bg-obesity">
+                                    <span class="custom-checkbox"></span>
+                                    Obesity
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="bg-smoke" name="bg-smoke">
+                                    <span class="custom-checkbox"></span>
+                                    Smoking
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="bg-family" name="bg-family">
+                                    <span class="custom-checkbox"></span>
+                                    Family history of cardiac disease
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -179,36 +203,85 @@
         <!-- Results Section -->
         <section id="results" class="fullscreen-section hidden-initial">
             <div class="container">
+                <h2 class="section-title results-title">Diagnostic Results</h2>
+
                 <div class="results-layout">
-                    <!-- Dramatic Reveal Card -->
+                    <!-- Dramatic Urgency Card -->
                     <div class="result-card dramatic-reveal" id="urgency-card">
                         <div class="urgency-indicator"></div>
                         <h2 class="urgency-title">Triage Status</h2>
                         <div class="urgency-level" id="urgency-value">--</div>
+                        <div class="urgency-sublabel" id="urgency-action">--</div>
                     </div>
 
+                    <!-- Primary Diagnosis -->
                     <div class="details-card">
-                        <h3>Diagnostic Analysis</h3>
+                        <h3>Primary Diagnosis</h3>
                         <div class="result-row">
-                            <span class="label">Primary Condition</span>
+                            <span class="label">Condition</span>
                             <span class="value" id="condition-value">--</span>
                         </div>
-                        <div class="result-row warning-action" id="action-container">
+                        <div class="result-row" id="action-container">
                             <span class="label">Suggested Action</span>
                             <span class="value action-text" id="action-value">--</span>
                         </div>
                     </div>
 
+                    <!-- Vital Signs Summary -->
+                    <div class="vitals-summary-panel">
+                        <h3>Vital Signs Assessment</h3>
+                        <div id="vitals-summary-grid" class="vitals-grid"></div>
+                    </div>
+
+                    <!-- Additional Conditions (if any) -->
+                    <div class="additional-conditions-panel" id="additional-panel" style="display:none;">
+                        <h3>Additional Findings</h3>
+                        <div id="additional-conditions-list"></div>
+                    </div>
+
+                    <!-- Risk Factors -->
+                    <div class="risk-factors-panel" id="risk-panel" style="display:none;">
+                        <h3>Risk Factor Profile</h3>
+                        <div class="risk-score-bar">
+                            <span class="risk-label">Risk Score</span>
+                            <div class="risk-bar-track">
+                                <div class="risk-bar-fill" id="risk-bar-fill"></div>
+                            </div>
+                            <span class="risk-score-value" id="risk-score-value">0</span>
+                        </div>
+                        <div id="risk-factors-tags" class="risk-tags"></div>
+                    </div>
+
                     <!-- Explanation Panel -->
                     <div class="explanation-panel">
-                        <h3>AI Reasoning Report</h3>
-                        <p id="explanation-text">Awaiting data...</p>
+                        <h3>Expert System Reasoning</h3>
+                        <div id="explanation-text" class="explanation-content">Awaiting data...</div>
+                    </div>
+
+                    <!-- Engine Meta -->
+                    <div class="engine-meta-panel">
+                        <div class="meta-item">
+                            <span class="meta-label">Rules Evaluated</span>
+                            <span class="meta-value" id="meta-rules-evaluated">--</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Rules Fired</span>
+                            <span class="meta-value" id="meta-rules-fired">--</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Engine</span>
+                            <span class="meta-value">Forward Chaining RBES</span>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="reset-action">
                      <button id="reset-btn" class="btn-secondary">New Assessment</button>
                 </div>
+
+                <p class="results-disclaimer">
+                    ⚠ This system is for educational purposes only and does not replace professional medical advice.
+                </p>
             </div>
         </section>
     </main>
@@ -237,6 +310,7 @@
     <script src="JS/particles.js"></script>
     <script type="module" src="JS/heart3d.js"></script>
     <script src="JS/scroll-effects.js"></script>
+    <script src="JS/expert-engine.js"></script>
     <script src="JS/script.js"></script>
 </body>
 </html>

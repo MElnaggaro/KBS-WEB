@@ -87,6 +87,9 @@ const heartState = {
 	fogColorR: 0.02, // 0x05 / 255 ≈ 0.02
 };
 
+// Expose globally for cursor sync
+window.heartState = heartState;
+
 // Target values — we lerp towards these
 const heartTarget = {
 	speed: 0,

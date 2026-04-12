@@ -57,6 +57,27 @@ body {
 	line-height: 1.5;
 	overflow-x: hidden;
 	position: relative;
+	cursor: none;
+}
+
+/* Ensure interactive elements use none instead of pointer */
+a, button, input, select, label, .progress-step, .custom-checkbox, .custom-radio {
+	cursor: none !important;
+}
+
+/* =============================================
+   CUSTOM CURSOR
+   ============================================= */
+#custom-cursor {
+	position: fixed;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: rgba(255, 0, 0, 0.8);
+	pointer-events: none;
+	z-index: 10000;
+	box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+	will-change: transform, left, top;
 }
 
 /* =============================================

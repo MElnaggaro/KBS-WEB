@@ -28,6 +28,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 
 const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x050505, 0.02);
 
 const camera = new THREE.PerspectiveCamera(
     45,
@@ -82,6 +83,8 @@ const heartState = {
     glowLightIntensity: 0,  // Diagnostic glow light intensity
     bloodSpeed: 0.1, // Particle speed
     bloodIntensity: 0.1, // Particle glow/opacity
+    fogDensity: 0.02,
+    fogColorR: 0.02, // 0x05 / 255 ≈ 0.02
 };
 
 // Target values — we lerp towards these
@@ -92,6 +95,8 @@ const heartTarget = {
     glowLightIntensity: 0,
     bloodSpeed: 0.1,
     bloodIntensity: 0.1,
+    fogDensity: 0.02,
+    fogColorR: 0.02,
 };
 
 // Severity presets
@@ -103,6 +108,8 @@ const SEVERITY_PRESETS = {
         glowLightIntensity: 0.3,
         bloodSpeed: 0.2,
         bloodIntensity: 0.2,
+        fogDensity: 0.01,
+        fogColorR: 0.02,
     },
     MODERATE: {
         speed: 1.0,
@@ -111,6 +118,8 @@ const SEVERITY_PRESETS = {
         glowLightIntensity: 0.8,
         bloodSpeed: 0.4,
         bloodIntensity: 0.4,
+        fogDensity: 0.02,
+        fogColorR: 0.04,
     },
     HIGH: {
         speed: 1.5,
@@ -119,6 +128,8 @@ const SEVERITY_PRESETS = {
         glowLightIntensity: 1.5,
         bloodSpeed: 0.7,
         bloodIntensity: 0.7,
+        fogDensity: 0.035,
+        fogColorR: 0.08,
     },
     CRITICAL: {
         speed: 3.0,
@@ -127,6 +138,8 @@ const SEVERITY_PRESETS = {
         glowLightIntensity: 3.5,
         bloodSpeed: 1.2,
         bloodIntensity: 1.0,
+        fogDensity: 0.06,
+        fogColorR: 0.133, // approx 0x22 / 255
     },
     IDLE: {
         speed: 0,
@@ -135,6 +148,8 @@ const SEVERITY_PRESETS = {
         glowLightIntensity: 0,
         bloodSpeed: 0.1,
         bloodIntensity: 0.1,
+        fogDensity: 0.02,
+        fogColorR: 0.02,
     },
 };
 
@@ -158,6 +173,8 @@ function updateHeartState(level) {
     heartTarget.glowLightIntensity = preset.glowLightIntensity;
     heartTarget.bloodSpeed = preset.bloodSpeed;
     heartTarget.bloodIntensity = preset.bloodIntensity;
+    heartTarget.fogDensity = preset.fogDensity;
+    heartTarget.fogColorR = preset.fogColorR;
     diagnosisActive = level !== 'IDLE';
 }
 
@@ -624,6 +641,12 @@ function animate() {
     heartState.glowLightIntensity += (heartTarget.glowLightIntensity - heartState.glowLightIntensity) * LERP_SPEED;
     heartState.bloodSpeed += (heartTarget.bloodSpeed - heartState.bloodSpeed) * LERP_SPEED;
     heartState.bloodIntensity += (heartTarget.bloodIntensity - heartState.bloodIntensity) * LERP_SPEED;
+    heartState.fogDensity += (heartTarget.fogDensity - heartState.fogDensity) * (LERP_SPEED * 0.5); // Slightly slower transition for fog
+    heartState.fogColorR += (heartTarget.fogColorR - heartState.fogColorR) * (LERP_SPEED * 0.5);
+
+    // Update scene fog
+    scene.fog.density = heartState.fogDensity;
+    scene.fog.color.setRGB(heartState.fogColorR, 0.02, 0.02);
 
     if (window._heartGroup) {
         // ── 1. IDLE FLOATING (always active) ──
@@ -676,17 +699,21 @@ function animate() {
             window._heartGroup.position.y += vibY;
         }
 
-        // ── 5. CAMERA SHAKE — CRITICAL only ──
+        // ── 5. CAMERA SHAKE & DEPTH PUSH ──
+        // Push camera back proportionally based on fogDensity
+        const targetZ = baseCameraPos.z + Math.max(0, (heartState.fogDensity - 0.02) * 12.5);
+        
         if (heartTarget.speed >= 2.0) {
             // Intensified sinusoidal camera shake for emergency feel
             const shakeIntensity = (heartState.speed - 1.5) * 0.012;
             camera.position.x = baseCameraPos.x + Math.sin(time * 23.7) * shakeIntensity;
             camera.position.y = baseCameraPos.y + Math.sin(time * 19.3) * shakeIntensity;
-            camera.position.z = baseCameraPos.z + Math.sin(time * 17.1) * shakeIntensity * 0.3;
+            camera.position.z += (targetZ + Math.sin(time * 17.1) * shakeIntensity * 0.3 - camera.position.z) * 0.05;
         } else {
-            // Smoothly return camera to base position
+            // Smoothly return camera to base position and depth
             camera.position.x += (baseCameraPos.x - camera.position.x) * 0.05;
             camera.position.y += (baseCameraPos.y - camera.position.y) * 0.05;
+            camera.position.z += (targetZ - camera.position.z) * 0.05;
         }
 
         // ── 6. RIM LIGHT COLOR SHIFT (severity-driven) ──

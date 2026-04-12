@@ -91,14 +91,14 @@ const sectionStates = [
         // Assessment — small, tucked to left
         id: 'assessment',
         position: { x: -2.5, y: 0.5, z: -1 },
-        rotation: { x: 0.1, y: 3.5, z: 0.2 },
+        rotation: { x: 0.1, y: 3.5 + Math.PI * 8, z: 0.2 },
         scale: 0.7,
     },
     {
         // Results — center but pulled back
         id: 'results',
         position: { x: 2.0, y: -0.3, z: -0.5 },
-        rotation: { x: -0.3, y: 5.0, z: -0.15 },
+        rotation: { x: -0.3, y: 5.0 + Math.PI * 8, z: -0.15 },
         scale: 0.8,
     },
 ];

@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const urgencyCard = document.getElementById('urgency-card');
             urgencyCard.className = 'result-card dramatic-reveal';
         }, 500);
+
+        // Reset 3D heart to calm state
+        window.dispatchEvent(new CustomEvent('diagnosisReset'));
     });
 
     // --- Expert System Integration ---
@@ -73,6 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. UPDATE THE RESULTS UI
         // ═══════════════════════════════════
         renderResults(result);
+
+        // ═══════════════════════════════════
+        // 4. UPDATE 3D HEART VISUALIZATION
+        // ═══════════════════════════════════
+        window.dispatchEvent(new CustomEvent('diagnosisResult', {
+            detail: {
+                urgency: result.urgency.label,
+                severityScore: result.severityScore
+            }
+        }));
     });
 
 

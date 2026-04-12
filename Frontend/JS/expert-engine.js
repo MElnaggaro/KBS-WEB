@@ -448,11 +448,15 @@ function runExpertSystem(patientData) {
     // ── Step 5: Build the clinical summary ──
     const vitalsSummary = buildVitalsSummary(vitals, vitalFacts);
 
+    // Map urgency level to severity score (0-3) for 3D heart visualization
+    const severityMap = { 1: 0, 2: 1, 3: 2, 4: 3 };
+
     return {
         primaryCondition: primary.condition,
         urgency: primary.urgency,
         suggestedAction: primary.urgency.action,
         explanation: primary.explanation,
+        severityScore: severityMap[primary.urgency.level] ?? 0,
         additionalConditions: additional.map(r => ({
             condition: r.condition,
             urgency: r.urgency,
@@ -499,6 +503,7 @@ function buildBaselineResult(symptoms, vitals, background, vitalFacts, riskFacto
         urgency: URGENCY.LOW,
         suggestedAction: URGENCY.LOW.action,
         explanation,
+        severityScore: 0,
         additionalConditions: [],
         vitalsSummary,
         riskFactors,

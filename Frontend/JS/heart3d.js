@@ -4,6 +4,9 @@
  * Loads a .glb heart model, renders it on a fixed fullscreen canvas,
  * and uses GSAP to smoothly animate position + rotation as the user
  * scrolls between page sections.
+ * 
+ * Also reacts to diagnosis results with severity-based visual effects:
+ * pulsing heartbeat, emissive glow, vibration, and camera shake.
  */
 
 import * as THREE from 'three';
@@ -62,6 +65,100 @@ const pointLight = new THREE.PointLight(0xff2020, 0.5, 15);
 pointLight.position.set(0, 0, 3);
 scene.add(pointLight);
 
+// ── Diagnostic glow light — pulsates near the heart ──
+const diagGlowLight = new THREE.PointLight(0xff1111, 0, 10);
+diagGlowLight.position.set(0, 0, 2);
+scene.add(diagGlowLight);
+
+// ============================================================
+//  DIAGNOSIS REACTIVE HEART STATE
+// ============================================================
+
+// Current animated values (smoothly interpolated)
+const heartState = {
+    speed: 0,        // Pulse speed multiplier
+    glow: 0,         // Emissive intensity (0 = none)
+    vibration: 0,    // Positional jitter amplitude
+    glowLightIntensity: 0,  // Diagnostic glow light intensity
+};
+
+// Target values — we lerp towards these
+const heartTarget = {
+    speed: 0,
+    glow: 0,
+    vibration: 0,
+    glowLightIntensity: 0,
+};
+
+// Severity presets
+const SEVERITY_PRESETS = {
+    LOW: {
+        speed: 0.5,
+        glow: 0.08,
+        vibration: 0,
+        glowLightIntensity: 0.3,
+    },
+    MODERATE: {
+        speed: 1.0,
+        glow: 0.25,
+        vibration: 0.002,
+        glowLightIntensity: 0.8,
+    },
+    HIGH: {
+        speed: 1.5,
+        glow: 0.5,
+        vibration: 0.006,
+        glowLightIntensity: 1.5,
+    },
+    CRITICAL: {
+        speed: 2.2,
+        glow: 0.9,
+        vibration: 0.012,
+        glowLightIntensity: 2.5,
+    },
+    IDLE: {
+        speed: 0,
+        glow: 0,
+        vibration: 0,
+        glowLightIntensity: 0,
+    },
+};
+
+// Interpolation speed (how quickly we lerp to target)
+const LERP_SPEED = 0.04;
+
+// Track whether a diagnosis is active
+let diagnosisActive = false;
+
+// Store the base camera position for camera shake
+const baseCameraPos = new THREE.Vector3(0, 0, 5);
+
+// ============================================================
+//  updateHeartState — called when diagnosis completes
+// ============================================================
+function updateHeartState(level) {
+    const preset = SEVERITY_PRESETS[level] || SEVERITY_PRESETS.IDLE;
+    heartTarget.speed = preset.speed;
+    heartTarget.glow = preset.glow;
+    heartTarget.vibration = preset.vibration;
+    heartTarget.glowLightIntensity = preset.glowLightIntensity;
+    diagnosisActive = level !== 'IDLE';
+}
+
+// Expose globally so script.js can call it if needed
+window.updateHeartState = updateHeartState;
+
+// Listen for diagnosis events from script.js
+window.addEventListener('diagnosisResult', (e) => {
+    const { urgency } = e.detail;
+    updateHeartState(urgency);
+});
+
+window.addEventListener('diagnosisReset', () => {
+    updateHeartState('IDLE');
+});
+
+
 // ============================================================
 //  SECTION STATES — position & rotation for each scroll section
 // ============================================================
@@ -107,8 +204,10 @@ const sectionStates = [
 //  MODEL LOADING
 // ============================================================
 let heartModel = null;
+let heartMaterials = []; // All mesh materials for emissive control
 let mixer = null;
 const clock = new THREE.Clock();
+let baseScale = 1; // The normalized scale factor from model loading
 
 const loader = new GLTFLoader();
 
@@ -126,8 +225,8 @@ loader.load(
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         const desiredSize = 2.5;
-        const scaleFactor = desiredSize / maxDim;
-        heartModel.scale.setScalar(scaleFactor);
+        baseScale = desiredSize / maxDim;
+        heartModel.scale.setScalar(baseScale);
 
         // Wrap in a group so we can control position/rotation separately
         window._heartGroup = new THREE.Group();
@@ -139,6 +238,21 @@ loader.load(
         window._heartGroup.position.set(initial.position.x, initial.position.y, initial.position.z);
         window._heartGroup.rotation.set(initial.rotation.x, initial.rotation.y, initial.rotation.z);
         window._heartGroup.scale.setScalar(initial.scale);
+
+        // ── Collect all materials for emissive control ──
+        heartModel.traverse((child) => {
+            if (child.isMesh && child.material) {
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach(mat => {
+                    // Enable emissive on materials that support it
+                    if (mat.emissive !== undefined) {
+                        mat.emissive = new THREE.Color(0xff2020);
+                        mat.emissiveIntensity = 0;
+                        heartMaterials.push(mat);
+                    }
+                });
+            }
+        });
 
         // If the model has animations, play them
         if (gltf.animations && gltf.animations.length > 0) {
@@ -266,22 +380,90 @@ const sectionObserver = new MutationObserver(() => {
 });
 
 // ============================================================
-//  ANIMATION LOOP
+//  ANIMATION LOOP — with diagnosis reactive effects
 // ============================================================
 function animate() {
     requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
+    const time = clock.getElapsedTime();
 
     // Update built-in animations
     if (mixer) mixer.update(delta);
 
-    // Subtle idle floating effect
+    // ── Smooth interpolation towards target state ──
+    heartState.speed += (heartTarget.speed - heartState.speed) * LERP_SPEED;
+    heartState.glow += (heartTarget.glow - heartState.glow) * LERP_SPEED;
+    heartState.vibration += (heartTarget.vibration - heartState.vibration) * LERP_SPEED;
+    heartState.glowLightIntensity += (heartTarget.glowLightIntensity - heartState.glowLightIntensity) * LERP_SPEED;
+
     if (window._heartGroup) {
-        const time = clock.getElapsedTime();
+        // ── 1. IDLE FLOATING (always active) ──
         // Gentle breathing / floating — additive to GSAP-controlled values
         window._heartGroup.position.y += Math.sin(time * 1.5) * 0.0008;
         window._heartGroup.rotation.y += 0.001; // very slow idle spin
+
+        // ── 2. HEARTBEAT PULSE (severity-driven) ──
+        if (heartState.speed > 0.01) {
+            // Organic heartbeat using a double-pulse waveform
+            const beatPhase = (time * heartState.speed) % (Math.PI * 2);
+            const beat1 = Math.max(0, Math.sin(beatPhase * 2)) * 0.7;
+            const beat2 = Math.max(0, Math.sin(beatPhase * 2 + 1.2)) * 0.3;
+            const pulse = (beat1 + beat2) * 0.06;
+
+            // Apply pulse as scale modulation on the inner model
+            const s = baseScale * (1 + pulse);
+            heartModel.scale.set(s, s, s);
+        } else {
+            // Smoothly return to normal scale
+            const currentS = heartModel.scale.x;
+            const targetS = baseScale;
+            const newS = currentS + (targetS - currentS) * 0.05;
+            heartModel.scale.set(newS, newS, newS);
+        }
+
+        // ── 3. EMISSIVE GLOW (severity-driven) ──
+        // Pulsing glow that breathes with the heartbeat
+        const glowPulse = heartState.speed > 0.01
+            ? 1 + Math.sin(time * heartState.speed * 2) * 0.3
+            : 1;
+        const currentGlow = heartState.glow * glowPulse;
+
+        heartMaterials.forEach(mat => {
+            mat.emissiveIntensity = currentGlow;
+        });
+
+        // Update diagnostic glow light
+        diagGlowLight.intensity = heartState.glowLightIntensity * glowPulse;
+        // Position glow light to follow heart group
+        diagGlowLight.position.copy(window._heartGroup.position);
+        diagGlowLight.position.z += 1.5;
+
+        // ── 4. VIBRATION (severity-driven, natural feel) ──
+        if (heartState.vibration > 0.0005) {
+            // Use smooth noise-like vibration instead of pure random
+            const vibX = Math.sin(time * 47.3) * Math.cos(time * 31.7) * heartState.vibration;
+            const vibY = Math.sin(time * 53.1) * Math.cos(time * 29.3) * heartState.vibration;
+            window._heartGroup.position.x += vibX;
+            window._heartGroup.position.y += vibY;
+        }
+
+        // ── 5. CAMERA SHAKE — CRITICAL only ──
+        if (heartTarget.speed >= 2.0) {
+            // Subtle sinusoidal camera shake for dramatic critical feel
+            const shakeIntensity = (heartState.speed - 1.8) * 0.008;
+            camera.position.x = baseCameraPos.x + Math.sin(time * 23.7) * shakeIntensity;
+            camera.position.y = baseCameraPos.y + Math.sin(time * 19.3) * shakeIntensity;
+        } else {
+            // Smoothly return camera to base position
+            camera.position.x += (baseCameraPos.x - camera.position.x) * 0.05;
+            camera.position.y += (baseCameraPos.y - camera.position.y) * 0.05;
+        }
+
+        // ── 6. RIM LIGHT COLOR SHIFT (severity-driven) ──
+        // Shift rim light from subtle red to intense crimson with severity
+        const rimIntensity = 0.8 + heartState.glow * 1.5;
+        rimLight.intensity = rimIntensity;
     }
 
     renderer.render(scene, camera);
@@ -302,3 +484,4 @@ window.addEventListener('resize', () => {
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
+

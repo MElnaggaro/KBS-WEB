@@ -80,6 +80,8 @@ const heartState = {
     glow: 0,         // Emissive intensity (0 = none)
     vibration: 0,    // Positional jitter amplitude
     glowLightIntensity: 0,  // Diagnostic glow light intensity
+    bloodSpeed: 0.1, // Particle speed
+    bloodIntensity: 0.1, // Particle glow/opacity
 };
 
 // Target values — we lerp towards these
@@ -88,6 +90,8 @@ const heartTarget = {
     glow: 0,
     vibration: 0,
     glowLightIntensity: 0,
+    bloodSpeed: 0.1,
+    bloodIntensity: 0.1,
 };
 
 // Severity presets
@@ -97,30 +101,40 @@ const SEVERITY_PRESETS = {
         glow: 0.08,
         vibration: 0,
         glowLightIntensity: 0.3,
+        bloodSpeed: 0.2,
+        bloodIntensity: 0.2,
     },
     MODERATE: {
         speed: 1.0,
         glow: 0.25,
         vibration: 0.002,
         glowLightIntensity: 0.8,
+        bloodSpeed: 0.4,
+        bloodIntensity: 0.4,
     },
     HIGH: {
         speed: 1.5,
         glow: 0.5,
         vibration: 0.006,
         glowLightIntensity: 1.5,
+        bloodSpeed: 0.7,
+        bloodIntensity: 0.7,
     },
     CRITICAL: {
         speed: 3.0,
         glow: 1.4,
         vibration: 0.018,
         glowLightIntensity: 3.5,
+        bloodSpeed: 1.2,
+        bloodIntensity: 1.0,
     },
     IDLE: {
         speed: 0,
         glow: 0,
         vibration: 0,
         glowLightIntensity: 0,
+        bloodSpeed: 0.1,
+        bloodIntensity: 0.1,
     },
 };
 
@@ -142,6 +156,8 @@ function updateHeartState(level) {
     heartTarget.glow = preset.glow;
     heartTarget.vibration = preset.vibration;
     heartTarget.glowLightIntensity = preset.glowLightIntensity;
+    heartTarget.bloodSpeed = preset.bloodSpeed;
+    heartTarget.bloodIntensity = preset.bloodIntensity;
     diagnosisActive = level !== 'IDLE';
 }
 
@@ -323,6 +339,86 @@ let mixer = null;
 const clock = new THREE.Clock();
 let baseScale = 1; // The normalized scale factor from model loading
 
+// ============================================================
+//  BLOOD FLOW ANIMATION SYSTEM
+// ============================================================
+let bloodParticles = null;
+let flowPaths = [];
+const particleCount = 250;
+
+function initBloodFlow() {
+    // 1. Approximate flow paths around heart
+    flowPaths = [
+        new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0, 1.2, 0.6),
+            new THREE.Vector3(0.5, 0.8, 0.7),
+            new THREE.Vector3(0.8, 0, 0.6),
+            new THREE.Vector3(0.4, -0.8, 0.5),
+            new THREE.Vector3(0, -1.2, 0.1)
+        ]),
+        new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.1, 1.3, 0.1),
+            new THREE.Vector3(-0.6, 0.9, 0.5),
+            new THREE.Vector3(-0.7, 0.2, 0.6),
+            new THREE.Vector3(-0.3, -0.6, 0.5),
+            new THREE.Vector3(0, -1.1, 0.2)
+        ]),
+        new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0.3, 1.1, -0.5),
+            new THREE.Vector3(0.6, 0.5, -0.6),
+            new THREE.Vector3(0.6, -0.3, -0.5),
+            new THREE.Vector3(0.2, -0.9, -0.2),
+            new THREE.Vector3(0, -1.2, -0.1)
+        ])
+    ];
+
+    // 2 & 8. Create particles and BufferGeometry 
+    const positions = new Float32Array(particleCount * 3);
+    const geometry = new THREE.BufferGeometry();
+    const progress = new Float32Array(particleCount);
+    const pathIdx = new Int32Array(particleCount);
+    const noiseOffsets = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount; i++) {
+        pathIdx[i] = i % flowPaths.length;
+        progress[i] = Math.random(); // 3. Spread along path
+        // 9. Add slight offset to form veins
+        noiseOffsets[i * 3] = (Math.random() - 0.5) * 0.15;
+        noiseOffsets[i * 3 + 1] = (Math.random() - 0.5) * 0.15;
+        noiseOffsets[i * 3 + 2] = (Math.random() - 0.5) * 0.15;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('progress', new THREE.BufferAttribute(progress, 1));
+    geometry.setAttribute('pathIdx', new THREE.BufferAttribute(pathIdx, 1));
+    geometry.setAttribute('noiseOffset', new THREE.BufferAttribute(noiseOffsets, 3));
+
+    // 6. Glowing red particle texture
+    const pCanvas = document.createElement('canvas');
+    pCanvas.width = 32; pCanvas.height = 32;
+    const pCtx = pCanvas.getContext('2d');
+    const pGrad = pCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    pGrad.addColorStop(0, 'rgba(255, 100, 100, 1)');
+    pGrad.addColorStop(0.3, 'rgba(255, 46, 46, 0.8)');
+    pGrad.addColorStop(1, 'rgba(255, 0, 0, 0)');
+    pCtx.fillStyle = pGrad;
+    pCtx.fillRect(0, 0, 32, 32);
+    const pTex = new THREE.CanvasTexture(pCanvas);
+
+    const material = new THREE.PointsMaterial({
+        map: pTex,
+        size: 0.1, // 2. small particle size
+        color: 0xff2e2e, // 2. bright red
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+
+    bloodParticles = new THREE.Points(geometry, material);
+    window._heartGroup.add(bloodParticles);
+}
+
 const loader = new GLTFLoader();
 
 loader.load(
@@ -346,6 +442,9 @@ loader.load(
         window._heartGroup = new THREE.Group();
         window._heartGroup.add(heartModel);
         scene.add(window._heartGroup);
+
+        // Initialize blood flow particles now that heart group is ready
+        initBloodFlow();
 
         // Apply initial state (hero)
         const initial = sectionStates[0];
@@ -523,6 +622,8 @@ function animate() {
     heartState.glow += (heartTarget.glow - heartState.glow) * LERP_SPEED;
     heartState.vibration += (heartTarget.vibration - heartState.vibration) * LERP_SPEED;
     heartState.glowLightIntensity += (heartTarget.glowLightIntensity - heartState.glowLightIntensity) * LERP_SPEED;
+    heartState.bloodSpeed += (heartTarget.bloodSpeed - heartState.bloodSpeed) * LERP_SPEED;
+    heartState.bloodIntensity += (heartTarget.bloodIntensity - heartState.bloodIntensity) * LERP_SPEED;
 
     if (window._heartGroup) {
         // ── 1. IDLE FLOATING (always active) ──
@@ -603,6 +704,37 @@ function animate() {
 
             heartModel.position.x += (mouse.x * 0.2 - heartModel.position.x) * 0.05;
             heartModel.position.y += (mouse.y * 0.2 - heartModel.position.y) * 0.05;
+        }
+
+        // ── 8. BLOOD FLOW ANIMATION ──
+        if (bloodParticles && flowPaths.length > 0) {
+            const positions = bloodParticles.geometry.attributes.position.array;
+            const progress = bloodParticles.geometry.attributes.progress.array;
+            const paths = bloodParticles.geometry.attributes.pathIdx.array;
+            const noise = bloodParticles.geometry.attributes.noiseOffset.array;
+            
+            // 7. Sync with heartbeat pulse: base speed + slight speed variation with pulse
+            const flowPulse = Math.max(0, Math.sin(time * heartState.speed * 2));
+            const baseSpeed = heartState.bloodSpeed;
+            const currentSpeed = (baseSpeed * 0.3) + (flowPulse * baseSpeed * 0.1); 
+            
+            for(let i = 0; i < particleCount; i++) {
+                // 3. Move along predefined curves
+                progress[i] += currentSpeed * delta;
+                if (progress[i] >= 1) progress[i] -= 1; // loop
+                
+                const path = flowPaths[paths[i]];
+                const pt = path.getPointAt(progress[i]);
+                
+                positions[i*3] = pt.x + noise[i*3];
+                positions[i*3+1] = pt.y + noise[i*3+1];
+                positions[i*3+2] = pt.z + noise[i*3+2];
+            }
+            bloodParticles.geometry.attributes.position.needsUpdate = true;
+            bloodParticles.geometry.attributes.progress.needsUpdate = true;
+            
+            // 6. Visual effect opacity responding to intensity
+            bloodParticles.material.opacity = 0.3 + heartState.bloodIntensity * 0.7;
         }
     }
 

@@ -894,6 +894,65 @@ input:checked + .custom-radio::after {
 }
 
 /* =============================================
+   SEVERITY METER
+   ============================================= */
+.severity-meter-container {
+	grid-column: 1 / -1;
+	background: var(--bg-card);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-lg);
+	padding: 2.5rem;
+	backdrop-filter: blur(16px);
+}
+
+.severity-meter {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	width: 100%;
+	margin-top: 0.5rem;
+}
+
+.meter-bar {
+	position: relative;
+	height: 12px;
+	width: 100%;
+	border-radius: 6px;
+	background: linear-gradient(to right, var(--urgency-low), var(--urgency-moderate), var(--urgency-high), var(--urgency-critical));
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) inset;
+}
+
+.meter-indicator {
+	position: absolute;
+	top: 50%;
+	left: 0%;
+	transform: translate(0%, -50%);
+	width: 24px;
+	height: 24px;
+	background: #fff;
+	border-radius: 50%;
+	border: 3px solid #111;
+	transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.8s, border-color 0.8s;
+	z-index: 5;
+	box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.indicator-low { box-shadow: 0 0 20px var(--urgency-low), inset 0 0 10px var(--urgency-low); border-color: var(--urgency-low); transform: translate(-0%, -50%); }
+.indicator-moderate { box-shadow: 0 0 20px var(--urgency-moderate), inset 0 0 10px var(--urgency-moderate); border-color: var(--urgency-moderate); transform: translate(-50%, -50%); }
+.indicator-high { box-shadow: 0 0 20px var(--urgency-high), inset 0 0 10px var(--urgency-high); border-color: var(--urgency-high); transform: translate(-50%, -50%); }
+.indicator-critical { box-shadow: 0 0 20px var(--urgency-critical), inset 0 0 10px var(--urgency-critical); border-color: var(--urgency-critical); transform: translate(-100%, -50%); }
+
+.meter-labels {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--color-text-dim);
+	letter-spacing: 0.05em;
+}
+
+/* =============================================
    RESULTS SECTION TITLE
    ============================================= */
 .results-title {

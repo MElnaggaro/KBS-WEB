@@ -147,6 +147,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ═════════════════════════════════════════════
+    // SEVERITY METER
+    // ═════════════════════════════════════════════
+    function updateSeverityMeter(level) {
+        const indicator = document.getElementById('severity-indicator');
+        if (!indicator) return;
+
+        let position = 0;
+        let className = 'meter-indicator indicator-low';
+
+        switch(level.toUpperCase()) {
+            case "LOW": 
+                position = 0; 
+                className = 'meter-indicator indicator-low';
+                break;
+            case "MODERATE": 
+                position = 33.33; 
+                className = 'meter-indicator indicator-moderate';
+                break;
+            case "HIGH": 
+                position = 66.66; 
+                className = 'meter-indicator indicator-high';
+                break;
+            case "CRITICAL": 
+                position = 100; 
+                className = 'meter-indicator indicator-critical';
+                break;
+        }
+
+        requestAnimationFrame(() => {
+            indicator.style.left = position + "%";
+            indicator.className = className;
+        });
+    }
+
+    // ═════════════════════════════════════════════
     // RENDER RESULTS
     // ═════════════════════════════════════════════
 
@@ -196,6 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // ── Render engine meta ──
         document.getElementById('meta-rules-evaluated').textContent = result.rulesEvaluated;
         document.getElementById('meta-rules-fired').textContent = result.rulesFired;
+
+        // ── Update Severity Meter ──
+        updateSeverityMeter(result.urgency.label);
 
         // ── Animate urgency card ──
         requestAnimationFrame(() => {

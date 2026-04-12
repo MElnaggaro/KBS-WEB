@@ -365,7 +365,7 @@ let baseScale = 1; // The normalized scale factor from model loading
 // ============================================================
 let bloodParticles = null;
 let flowPaths = [];
-const particleCount = 250;
+const particleCount = 100; // Reduced for performance
 
 function initBloodFlow() {
 	// 1. Approximate flow paths around heart
@@ -432,7 +432,7 @@ function initBloodFlow() {
 
 	const material = new THREE.PointsMaterial({
 		map: pTex,
-		size: 0.1, // 2. small particle size
+		size: 0.18, // Slightly larger particles to compensate for fewer count
 		color: 0xff2e2e, // 2. bright red
 		transparent: true,
 		opacity: 0.6,
@@ -536,11 +536,8 @@ function getActiveSection() {
 
 	for (const state of sectionStates) {
 		const el = document.getElementById(state.id);
-		if (!el) continue;
-
-		// Skip hidden sections
-		const style = window.getComputedStyle(el);
-		if (style.display === "none" || style.visibility === "hidden") continue;
+		// Skip non-existent or hidden sections (offsetParent is null when display: none)
+		if (!el || el.offsetParent === null) continue;
 
 		const rect = el.getBoundingClientRect();
 		const viewportH = window.innerHeight;
@@ -572,7 +569,7 @@ function animateToState(state) {
 		x: state.position.x,
 		y: state.position.y,
 		z: state.position.z,
-		duration: 1.2,
+		duration: 0.8,
 		ease: "power3.out",
 		overwrite: true,
 	});
@@ -582,7 +579,7 @@ function animateToState(state) {
 		x: state.rotation.x,
 		y: state.rotation.y,
 		z: state.rotation.z,
-		duration: 1.2,
+		duration: 0.8,
 		ease: "power3.out",
 		overwrite: true,
 	});
@@ -592,7 +589,7 @@ function animateToState(state) {
 		x: state.scale,
 		y: state.scale,
 		z: state.scale,
-		duration: 1.2,
+		duration: 0.8,
 		ease: "power3.out",
 		overwrite: true,
 	});
@@ -769,12 +766,12 @@ function animate() {
 			targetRotation.x = mouse.y * 0.3;
 
 			heartModel.rotation.y +=
-				(targetRotation.y - heartModel.rotation.y) * 0.05;
+				(targetRotation.y - heartModel.rotation.y) * 0.02;
 			heartModel.rotation.x +=
-				(targetRotation.x - heartModel.rotation.x) * 0.05;
+				(targetRotation.x - heartModel.rotation.x) * 0.02;
 
-			heartModel.position.x += (mouse.x * 0.2 - heartModel.position.x) * 0.05;
-			heartModel.position.y += (mouse.y * 0.2 - heartModel.position.y) * 0.05;
+			heartModel.position.x += (mouse.x * 0.2 - heartModel.position.x) * 0.02;
+			heartModel.position.y += (mouse.y * 0.2 - heartModel.position.y) * 0.02;
 		}
 
 		// ── 8. BLOOD FLOW ANIMATION ──
@@ -795,7 +792,7 @@ function animate() {
 				if (progress[i] >= 1) progress[i] -= 1; // loop
 
 				const path = flowPaths[paths[i]];
-				const pt = path.getPointAt(progress[i]);
+				const pt = path.getPoint(progress[i]); // Use getPoint instead of getPointAt to avoid massive CPU overhead
 
 				positions[i * 3] = pt.x + noise[i * 3];
 				positions[i * 3 + 1] = pt.y + noise[i * 3 + 1];

@@ -14,10 +14,10 @@
 	let animationId;
 
 	const CONFIG = {
-		particleCount: 250,
+		particleCount: 90,
 		maxSpeed: 0.4,
-		particleSize: { min: 1.5, max: 3.5 },
-		connectionDistance: 190,
+		particleSize: { min: 2.0, max: 4.5 },
+		connectionDistance: 270,
 		mouseRepelRadius: 220,
 		mouseRepelForce: 0.1,
 		mouseAttractRadius: 400,

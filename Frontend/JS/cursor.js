@@ -44,6 +44,10 @@ if (!isTouchDevice && cursor) {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
+    // Ensure cursor is positioned relative to top left for transform translate3d to work perfectly
+    cursor.style.left = '0px';
+    cursor.style.top = '0px';
+
     // Animation loop
     const animateCursor = (time) => {
         // 1. Smooth interpolation
@@ -77,10 +81,8 @@ if (!isTouchDevice && cursor) {
         // Combine scales
         const finalScale = hoverScale * (1 + pulse);
         
-        // Apply transform
-        cursor.style.transform = `translate(-50%, -50%) scale(${finalScale})`;
-        cursor.style.left = `${cursorX}px`;
-        cursor.style.top = `${cursorY}px`;
+        // Apply transform via translate3d for hardware acceleration, avoiding costly top/left reflows
+        cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%) scale(${finalScale})`;
         
         requestAnimationFrame(animateCursor);
     };

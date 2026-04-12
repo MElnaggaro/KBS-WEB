@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardknowlogy</title>
+    <meta name="description" content="AI-powered clinical decision support for early triage and diagnosis.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body>
+    <!-- Interactive Particle Canvas Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Ambient glow that follows mouse -->
+    <div id="mouse-glow"></div>
+
+    <!-- Three.js 3D Heart Canvas (fixed, fullscreen, non-blocking) -->
+    <canvas id="heart-3d-canvas"></canvas>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="fullscreen-section">
+            <div class="hero-content">
+                <header class="hero-text scroll-reveal">
+                    <div class="glow-effect"></div>
+                    <h1 class="futuristic-title" data-text="CARDKNOWLOGY">CARDKNOWLOGY</h1>
+                    <p class="subtitle">AI-powered clinical decision support for early triage and diagnosis</p>
+                </header>
+
+                <div class="scroll-hint scroll-reveal" id="scroll-hint">
+                    <span>Scroll to explore</span>
+                    <div class="scroll-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12l7 7 7-7"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Showcase Section -->
+        <section id="heart-showcase" class="showcase-section">
+            <div class="showcase-content">
+                <div class="showcase-text-track">
+                    <div class="showcase-text-item scroll-reveal" data-step="0">
+                        <span class="step-label">01</span>
+                        <h2>Precision Diagnostics</h2>
+                        <p>Advanced AI algorithms analyze vital signs in real-time, detecting subtle patterns invisible to the human eye.</p>
+                    </div>
+                    <div class="showcase-text-item scroll-reveal" data-step="1">
+                        <span class="step-label">02</span>
+                        <h2>Instant Triage</h2>
+                        <p>Our system categorizes patient risk levels within seconds, enabling rapid clinical decision-making.</p>
+                    </div>
+                    <div class="showcase-text-item scroll-reveal" data-step="2">
+                        <span class="step-label">03</span>
+                        <h2>Evidence-Based</h2>
+                        <p>Every recommendation is backed by clinical research and transparent AI reasoning you can trust.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="cta-section" class="fullscreen-section">
+            <div class="cta-section-content scroll-reveal">
+                <h2 class="cta-heading">Ready to Begin?</h2>
+                <p class="cta-subtitle">Enter patient data for an instant AI-powered assessment</p>
+                <div class="cta-container">
+                    <button id="start-btn" class="btn-primary">
+                        <span class="btn-text">Start Assessment</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Input Form Section -->
+        <section id="assessment" class="fullscreen-section section-fade hidden-initial">
+            <div class="container">
+                <h2 class="section-title scroll-reveal">Patient Data Entry</h2>
+                
+                <form id="diagnosis-form" class="medical-card scroll-reveal">
+                    <div class="form-grid">
+                        
+                        <!-- Symptoms Category -->
+                        <div class="form-category">
+                            <h3>A. Symptoms</h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sym-sob" name="sym-sob">
+                                    <span class="custom-checkbox"></span>
+                                    Shortness of breath
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sym-cp" name="sym-cp">
+                                    <span class="custom-checkbox"></span>
+                                    Chest pain
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sym-fatigue" name="sym-fatigue">
+                                    <span class="custom-checkbox"></span>
+                                    Fatigue
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sym-edema" name="sym-edema">
+                                    <span class="custom-checkbox"></span>
+                                    Edema
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vital Signs Category -->
+                        <div class="form-category">
+                            <h3>B. Vital Signs</h3>
+                            <div class="input-group">
+                                <label for="vital-bp">Blood Pressure (mmHg)</label>
+                                <input type="text" id="vital-bp" name="vital-bp" placeholder="e.g. 120/80" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="vital-hr">Heart Rate (bpm)</label>
+                                <input type="number" id="vital-hr" name="vital-hr" placeholder="e.g. 75" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="vital-o2">Oxygen Saturation (%)</label>
+                                <input type="number" id="vital-o2" name="vital-o2" placeholder="e.g. 98" required>
+                            </div>
+                        </div>
+
+                        <!-- Background Category -->
+                        <div class="form-category">
+                            <h3>C. Background</h3>
+                            <div class="input-group">
+                                <label for="bg-age">Age</label>
+                                <input type="number" id="bg-age" name="bg-age" placeholder="e.g. 60" required>
+                            </div>
+                            <div class="radio-group">
+                                <span class="group-label">Hypertension</span>
+                                <div class="radio-options">
+                                    <label class="radio-label">
+                                        <input type="radio" name="bg-ht" value="yes" required>
+                                        <span class="custom-radio"></span> Yes
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="bg-ht" value="no">
+                                        <span class="custom-radio"></span> No
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="radio-group">
+                                <span class="group-label">Smoking</span>
+                                <div class="radio-options">
+                                    <label class="radio-label">
+                                        <input type="radio" name="bg-smoke" value="yes" required>
+                                        <span class="custom-radio"></span> Yes
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="bg-smoke" value="no">
+                                        <span class="custom-radio"></span> No
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary analyze-btn">
+                            <span class="btn-text">Analyze Patient Data</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" class="fullscreen-section hidden-initial">
+            <div class="container">
+                <div class="results-layout">
+                    <!-- Dramatic Reveal Card -->
+                    <div class="result-card dramatic-reveal" id="urgency-card">
+                        <div class="urgency-indicator"></div>
+                        <h2 class="urgency-title">Triage Status</h2>
+                        <div class="urgency-level" id="urgency-value">--</div>
+                    </div>
+
+                    <div class="details-card">
+                        <h3>Diagnostic Analysis</h3>
+                        <div class="result-row">
+                            <span class="label">Primary Condition</span>
+                            <span class="value" id="condition-value">--</span>
+                        </div>
+                        <div class="result-row warning-action" id="action-container">
+                            <span class="label">Suggested Action</span>
+                            <span class="value action-text" id="action-value">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Explanation Panel -->
+                    <div class="explanation-panel">
+                        <h3>AI Reasoning Report</h3>
+                        <p id="explanation-text">Awaiting data...</p>
+                    </div>
+                </div>
+                
+                <div class="reset-action">
+                     <button id="reset-btn" class="btn-secondary">New Assessment</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- <footer>
+        <div class="container">
+            <p class="disclaimer">
+                <span class="warning-icon">⚠</span> 
+                This system is for educational purposes only and does not replace professional medical advice.
+            </p>
+        </div>
+    </footer> -->
+
+    <!-- Three.js & GSAP (CDN) -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <!-- App Scripts -->
+    <script src="JS/particles.js"></script>
+    <script type="module" src="JS/heart3d.js"></script>
+    <script src="JS/scroll-effects.js"></script>
+    <script src="JS/script.js"></script>
+</body>
+</html>

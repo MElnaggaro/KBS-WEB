@@ -380,6 +380,19 @@ const sectionObserver = new MutationObserver(() => {
 });
 
 // ============================================================
+//  INTERACTIVE HOVER EFFECT
+// ============================================================
+const mouse = { x: 0, y: 0 };
+const targetRotation = { x: 0, y: 0 };
+
+if (!('ontouchstart' in window)) {
+    window.addEventListener("mousemove", (e) => {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+}
+
+// ============================================================
 //  ANIMATION LOOP — with diagnosis reactive effects
 // ============================================================
 function animate() {
@@ -465,6 +478,18 @@ function animate() {
         // Shift rim light from subtle red to intense crimson with severity
         const rimIntensity = 0.8 + heartState.glow * 1.5;
         rimLight.intensity = rimIntensity;
+
+        // ── 7. HOVER INTERACTION ──
+        if (!('ontouchstart' in window)) {
+            targetRotation.y = mouse.x * 0.5;
+            targetRotation.x = mouse.y * 0.3;
+
+            heartModel.rotation.y += (targetRotation.y - heartModel.rotation.y) * 0.05;
+            heartModel.rotation.x += (targetRotation.x - heartModel.rotation.x) * 0.05;
+
+            heartModel.position.x += (mouse.x * 0.2 - heartModel.position.x) * 0.05;
+            heartModel.position.y += (mouse.y * 0.2 - heartModel.position.y) * 0.05;
+        }
     }
 
     renderer.render(scene, camera);

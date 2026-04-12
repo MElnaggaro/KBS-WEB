@@ -16,9 +16,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     */
 
-    // Elevate z-indexes so Heart & Title appear above the black intro screen
-    if (heartCanvas) heartCanvas.style.zIndex = "10000";
-    if (titleContainer) titleContainer.style.zIndex = "10001";
+    // Instead of elevating z-indexes and risking jumps at the end, 
+    // we simply hide the surrounding non-essential elements and fade them in later.
+    const elementsToHide = document.querySelectorAll(".subtitle, .scroll-hint, .glow-effect, #particle-canvas, #mouse-glow");
+    if (elementsToHide.length) {
+        gsap.set(elementsToHide, { opacity: 0 });
+    }
+    const heroSection = document.getElementById("hero");
+    if (heroSection) {
+        heroSection.classList.add("hide-hero-bg");
+    }
 
     // Disable CSS animations on the title so GSAP can take over cleanly
     if (title) {
@@ -66,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         // Make completely transparent initially safely
                         mat.transparent = true;
                         mat.opacity = 0;
+                        mat.needsUpdate = true; // Crucial for Three.js correctly compiling the transparent shader
                         heartMaterials.push(mat);
                     });
                 }
@@ -85,16 +93,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 // EXIT INTRO
                 gsap.to("#intro-screen", {
                     opacity: 0,
-                    duration: 1,
+                    duration: 1.5,
                     onComplete: () => {
                         if (introScreen) introScreen.remove();
-                        // Reset elevated z-indexes smoothly
-                        if (titleContainer) titleContainer.style.zIndex = "";
-                        if (heartCanvas) heartCanvas.style.zIndex = "";
-                        // Fallback trigger for audio if they missed it during the 5s window
+                        // Fallback trigger for audio if they missed it during the window
                         playHeartbeat();
                     }
                 });
+
+                // Fade back the surrounding elements smoothly
+                if (elementsToHide.length) {
+                    gsap.to(elementsToHide, { 
+                        opacity: 1, 
+                        duration: 1.5, 
+                        ease: "power2.inOut", 
+                        clearProps: "opacity" 
+                    });
+                }
+                if (heroSection) heroSection.classList.remove("hide-hero-bg");
             }
         });
 

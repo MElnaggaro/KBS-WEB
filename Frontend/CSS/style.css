@@ -87,7 +87,7 @@ a, button, input, select, label, .progress-step, .custom-checkbox, .custom-radio
 	position: fixed;
 	inset: 0;
 	background: #000000;
-	z-index: 9999;
+	z-index: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -315,6 +315,11 @@ h3 {
 	background: radial-gradient(circle, rgba(139, 0, 0, 0.15), transparent 70%);
 	z-index: 0;
 	pointer-events: none;
+	transition: opacity 1.5s ease-in-out;
+}
+
+#hero.hide-hero-bg::before {
+	opacity: 0 !important;
 }
 
 .hero-content {

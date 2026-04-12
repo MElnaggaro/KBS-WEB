@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Expert System Integration ---
     const form = document.getElementById('diagnosis-form');
     
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         // ═══════════════════════════════════
@@ -95,17 +95,38 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // ═══════════════════════════════════
-        // 2. RUN THE EXPERT ENGINE
+        // 2. DIAGNOSTIC SCAN ANIMATION
+        // ═══════════════════════════════════
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        if (window.runDiagnosticScan) {
+            // Update button state
+            submitBtn.innerHTML = "<span>Analyzing...</span>";
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.pointerEvents = 'none';
+            
+            // Wait for scan animation to complete
+            await window.runDiagnosticScan();
+            
+            // Restore button state
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.style.opacity = '';
+            submitBtn.style.pointerEvents = '';
+        }
+
+        // ═══════════════════════════════════
+        // 3. RUN THE EXPERT ENGINE
         // ═══════════════════════════════════
         const result = runExpertSystem(patientData);
 
         // ═══════════════════════════════════
-        // 3. UPDATE THE RESULTS UI
+        // 4. UPDATE THE RESULTS UI
         // ═══════════════════════════════════
         renderResults(result);
 
         // ═══════════════════════════════════
-        // 4. EMERGENCY MODE CHECK
+        // 5. EMERGENCY MODE CHECK
         // ═══════════════════════════════════
         if (result.urgency.label === 'CRITICAL') {
             activateEmergencyMode();
@@ -114,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // ═══════════════════════════════════
-        // 5. UPDATE 3D HEART VISUALIZATION
+        // 6. UPDATE 3D HEART VISUALIZATION
         // ═══════════════════════════════════
         window.dispatchEvent(new CustomEvent('diagnosisResult', {
             detail: {

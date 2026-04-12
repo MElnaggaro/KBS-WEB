@@ -160,6 +160,120 @@ window.addEventListener('diagnosisReset', () => {
 
 
 // ============================================================
+//  DIAGNOSTIC SCAN EFFECT
+// ============================================================
+let scanPlane = null;
+
+// Expose globally to be triggered on form submit
+window.runDiagnosticScan = function() {
+    return new Promise((resolve) => {
+        if (!scanPlane) {
+            // Create a transparent plane (Mesh) using PlaneGeometry
+            const geometry = new THREE.PlaneGeometry(0.3, 5);
+            
+            // Apply a glowing red/white gradient material
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 1;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 256, 0);
+            gradient.addColorStop(0, "rgba(255, 0, 0, 0)");
+            gradient.addColorStop(0.3, "rgba(255, 50, 50, 0.4)");
+            gradient.addColorStop(0.5, "rgba(255, 255, 255, 1)");
+            gradient.addColorStop(0.7, "rgba(255, 50, 50, 0.4)");
+            gradient.addColorStop(1, "rgba(255, 0, 0, 0)");
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 256, 1);
+            
+            const tex = new THREE.CanvasTexture(canvas);
+            
+            const material = new THREE.MeshBasicMaterial({
+                map: tex,
+                transparent: true,
+                opacity: 0,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending,
+                color: 0xffffff,
+                side: THREE.DoubleSide
+            });
+            scanPlane = new THREE.Mesh(geometry, material);
+        }
+
+        // Place the plane in front of the heart inside its group so it rotates with it
+        if (window._heartGroup && !scanPlane.parent) {
+            window._heartGroup.add(scanPlane);
+        }
+
+        // Position: place in front (z=1.5) and left side (x=-2)
+        scanPlane.position.set(-2, 0, 1.5);
+        scanPlane.material.opacity = 0.6;
+        
+        // HEART REACTION: Increase heart emissive intensity during scan
+        const originalGlow = heartState.glow;
+        heartState.glow += 0.5;
+
+        // OPTIONAL POLISH: Add subtle sound (scan beep)
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 1.5);
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime + 1.4);
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 1.5);
+            }
+        } catch (e) {
+            console.warn("Audio not supported or allowed", e);
+        }
+
+        // OPTIONAL POLISH: Add slight camera zoom during scan
+        const originalZoom = camera.zoom;
+        gsap.to(camera, { 
+            zoom: 1.1, 
+            duration: 0.5, 
+            onUpdate: () => camera.updateProjectionMatrix() 
+        });
+
+        // SCAN ANIMATION: Move the scan plane from left to right
+        gsap.fromTo(scanPlane.position, 
+            { x: -2 },
+            {
+                x: 2,
+                duration: 1.5,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    // CLEANUP: Hide the scan plane after animation
+                    gsap.to(scanPlane.material, { opacity: 0, duration: 0.3 });
+                    
+                    // Revert camera zoom
+                    gsap.to(camera, { 
+                        zoom: originalZoom, 
+                        duration: 0.5, 
+                        onUpdate: () => camera.updateProjectionMatrix() 
+                    });
+                    
+                    // Reset heart glow to normal 
+                    heartState.glow = originalGlow;
+                    
+                    resolve();
+                }
+            }
+        );
+    });
+};
+
+
+
+// ============================================================
 //  SECTION STATES — position & rotation for each scroll section
 // ============================================================
 const sectionStates = [

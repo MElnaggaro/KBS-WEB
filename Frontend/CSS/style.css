@@ -87,10 +87,37 @@ a, button, input, select, label, .progress-step, .custom-checkbox, .custom-radio
 	position: fixed;
 	inset: 0;
 	background: #000000;
-	z-index: 0;
+	z-index: 9999;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.intro-click-prompt {
+	color: var(--color-text-dim);
+	font-family: "Orbitron", sans-serif;
+	font-size: 1rem;
+	font-weight: 700;
+	letter-spacing: 0.4em;
+	text-align: center;
+	opacity: 0.6;
+	transition: opacity 0.3s;
+}
+
+.intro-click-prompt.ready {
+	color: var(--color-primary-glow);
+	opacity: 1;
+	animation: pulsePrompt 1.5s infinite alternate;
+}
+
+.prompt-bracket {
+	color: rgba(255, 255, 255, 0.3);
+	margin: 0 0.8rem;
+}
+
+@keyframes pulsePrompt {
+	0% { text-shadow: 0 0 10px rgba(255, 46, 46, 0.1); transform: scale(1); }
+	100% { text-shadow: 0 0 25px rgba(255, 46, 46, 0.6); transform: scale(1.02); }
 }
 
 /* =============================================

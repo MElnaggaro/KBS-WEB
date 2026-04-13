@@ -44,6 +44,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	transition: color 0.3s ease, background 0.3s ease; /* Global Smooth Transitions */
 }
 
 html {
@@ -558,10 +559,22 @@ h3 {
 	border: none;
 	position: relative;
 	overflow: hidden;
-	transition: var(--transition-smooth);
+	transition: all 0.3s ease; /* Updated transition */
 	font-family: inherit;
 	z-index: 1;
 }
+
+.btn-primary:hover,
+.btn-secondary:hover {
+	transform: scale(1.05); /* Premium Hover Scale */
+	box-shadow: 0 0 20px rgba(255, 46, 46, 0.4); /* Hover Glow */
+}
+
+.btn-primary:active,
+.btn-secondary:active {
+	transform: scale(0.98); /* Active Feedback */
+}
+
 
 .btn-primary {
 	background: rgba(255, 255, 255, 0.05);
@@ -752,17 +765,19 @@ input[type="number"] {
 	color: white;
 	font-family: inherit;
 	font-size: 1.1rem;
-	transition: var(--transition-smooth);
+	transition: all 0.3s ease; /* Updated transition */
 	outline: none;
 	width: 100%;
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus {
-	border-color: rgba(255, 26, 26, 0.5);
+	border-color: #ff2e2e; /* Focus color */
 	background: rgba(255, 255, 255, 0.05);
-	box-shadow: 0 0 20px rgba(255, 26, 26, 0.1);
+	box-shadow: 0 0 10px rgba(255, 46, 46, 0.3); /* Focus Glow */
+	transform: scale(1.02); /* Focus Scale */
 }
+
 
 /* Checkboxes & Radios */
 .checkbox-group,
@@ -795,13 +810,14 @@ input[type="number"]:focus {
 	cursor: pointer;
 	color: var(--color-text-main);
 	font-size: 0.95rem;
-	transition: var(--transition-smooth);
+	transition: all 0.2s ease; /* Updated transition */
 }
 
-.checkbox-label:hover,
-.radio-label:hover {
+.checkbox-label:hover {
+	transform: translateX(5px); /* Slide on hover */
 	color: white;
 }
+
 
 .checkbox-label input,
 .radio-label input {
@@ -856,10 +872,21 @@ input:checked + .custom-radio {
 	box-shadow: 0 0 10px var(--color-primary-glow);
 }
 
+input[type="checkbox"]:checked + .custom-checkbox {
+	animation: pulseCheck 0.3s ease; /* Pulse on check */
+}
+
+@keyframes pulseCheck {
+	0% { transform: scale(0.8); }
+	50% { transform: scale(1.2); }
+	100% { transform: scale(1); }
+}
+
 input:checked + .custom-checkbox::after,
 input:checked + .custom-radio::after {
 	transform: translate(-50%, -50%) scale(1);
 }
+
 
 .form-actions {
 	margin-top: 3rem;
@@ -894,7 +921,14 @@ input:checked + .custom-radio::after {
 	border-radius: var(--border-radius-lg);
 	padding: 2.5rem;
 	backdrop-filter: blur(16px);
+	transition: all 0.3s ease; /* Updated transition */
 }
+
+.result-card:hover {
+	transform: translateY(-5px); /* Lift on hover */
+	box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
+}
+
 
 .dramatic-reveal {
 	display: flex;
@@ -1739,4 +1773,27 @@ body:not(.emergency-mode) #heart-3d-canvas {
 	.explanation-panel {
 		padding: 1.5rem;
 	}
+}
+/* =============================================
+   UTILITY ANIMATIONS
+   ============================================= */
+.fade-in {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: all 0.5s ease;
+}
+
+.fade-in.active {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.glow-effect {
+	animation: glowPulse 2s infinite;
+}
+
+@keyframes glowPulse {
+	0% { opacity: 0.5; box-shadow: 0 0 10px rgba(255, 46, 46, 0.2); }
+	50% { opacity: 1; box-shadow: 0 0 25px rgba(255, 46, 46, 0.5); }
+	100% { opacity: 0.5; box-shadow: 0 0 10px rgba(255, 46, 46, 0.2); }
 }

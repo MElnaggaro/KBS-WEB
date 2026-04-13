@@ -22,6 +22,17 @@ document.addEventListener("DOMContentLoaded", () => {
 		emergencyAlert.classList.remove("alert-visible");
 	}
 
+	// --- Fade-in Observer ---
+	const fadeInObserver = new IntersectionObserver((entries) => {
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				entry.target.classList.add("active");
+			}
+		});
+	}, { threshold: 0.1 });
+
+	document.querySelectorAll(".fade-in").forEach(el => fadeInObserver.observe(el));
+
 	// --- Navigation & Scrolling ---
 	const startBtn = document.getElementById("start-btn");
 	const assessmentSection = document.getElementById("assessment");
@@ -389,7 +400,17 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 			grid.appendChild(item);
 		});
+
+		// Staggered reveal for vitals
+		gsap.from(grid.querySelectorAll(".vital-item"), {
+			opacity: 0,
+			y: 20,
+			duration: 0.6,
+			stagger: 0.1,
+			ease: "power2.out"
+		});
 	}
+
 
 	// ═════════════════════════════════════════════
 	// RENDER ADDITIONAL CONDITIONS
@@ -419,7 +440,17 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 			list.appendChild(card);
 		});
+
+		// Staggered reveal for additional conditions
+		gsap.from(list.querySelectorAll(".additional-condition-card"), {
+			opacity: 0,
+			y: 20,
+			duration: 0.6,
+			stagger: 0.15,
+			ease: "power2.out"
+		});
 	}
+
 
 	// ═════════════════════════════════════════════
 	// RENDER RISK FACTORS
@@ -468,7 +499,17 @@ document.addEventListener("DOMContentLoaded", () => {
 			tag.textContent = factor;
 			tags.appendChild(tag);
 		});
+
+		// Staggered reveal for risk tags
+		gsap.from(tags.querySelectorAll(".risk-tag"), {
+			opacity: 0,
+			scale: 0.8,
+			duration: 0.4,
+			stagger: 0.05,
+			ease: "back.out(1.7)"
+		});
 	}
+
 
 	// ═════════════════════════════════════════════
 	// RENDER EXPLANATION

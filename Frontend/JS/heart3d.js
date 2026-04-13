@@ -85,6 +85,9 @@ const heartState = {
 	bloodIntensity: 0.1, // Particle glow/opacity
 	fogDensity: 0.02,
 	fogColorR: 0.02, // 0x05 / 255 ≈ 0.02
+	bpm: 70,         // NEW: Live heart rate
+	intensity: 0.3,  // NEW: Live intensity based on BP
+	oxygen: 0.98,    // NEW: Live oxygen level for color shift
 };
 
 // Expose globally for cursor sync
@@ -100,6 +103,9 @@ const heartTarget = {
 	bloodIntensity: 0.1,
 	fogDensity: 0.02,
 	fogColorR: 0.02,
+	bpm: 70,
+	intensity: 0.3,
+	oxygen: 0.98,
 };
 
 // Severity presets
@@ -183,6 +189,36 @@ function updateHeartState(level) {
 
 // Expose globally so script.js can call it if needed
 window.updateHeartState = updateHeartState;
+
+// ============================================================
+//  LIVE HEART REACTION (Vitals Input)
+// ============================================================
+function updateHeartFromInputs() {
+	if (diagnosisActive) return;
+
+	const hr = parseInt(document.getElementById("vital-hr")?.value) || 70;
+	const bp = parseInt(document.getElementById("vital-bp")?.value) || 120;
+	const o2 = parseInt(document.getElementById("vital-o2")?.value) || 98;
+	const hb = parseFloat(document.getElementById("vital-hb")?.value) || 14;
+
+	// Heart rate → bpm
+	heartTarget.bpm = Math.min(Math.max(hr, 50), 140);
+
+	// Blood pressure → intensity
+	heartTarget.intensity = bp > 140 ? 0.8 : 0.3;
+
+	// Oxygen → color darkness
+	heartTarget.oxygen = o2 / 100;
+
+	// Hemoglobin → glow strength
+	heartTarget.glow = hb < 12 ? 0.2 : 0.5;
+}
+
+// Attach event listeners to live inputs
+document.getElementById("vital-hr")?.addEventListener("input", updateHeartFromInputs);
+document.getElementById("vital-bp")?.addEventListener("input", updateHeartFromInputs);
+document.getElementById("vital-o2")?.addEventListener("input", updateHeartFromInputs);
+document.getElementById("vital-hb")?.addEventListener("input", updateHeartFromInputs);
 
 // Listen for diagnosis events from script.js
 window.addEventListener("diagnosisResult", (e) => {
@@ -673,6 +709,18 @@ function animate() {
 	heartState.fogColorR +=
 		(heartTarget.fogColorR - heartState.fogColorR) * (LERP_SPEED * 0.5);
 
+	// Smoothly lerp our new live reaction variables
+	heartState.bpm += (heartTarget.bpm - heartState.bpm) * 0.05;
+	heartState.intensity += (heartTarget.intensity - heartState.intensity) * 0.05;
+	heartState.oxygen += (heartTarget.oxygen - heartState.oxygen) * 0.05;
+
+	// Apply input-driven target variables if not actively showing a diagnosis
+	if (!diagnosisActive) {
+		heartTarget.speed = heartState.bpm / 60;
+		// Increase base vibration slightly if pressure intensity is high
+		heartTarget.vibration = heartState.intensity > 0.4 ? 0.001 * heartState.intensity : 0;
+	}
+
 	// Update scene fog
 	scene.fog.density = heartState.fogDensity;
 	scene.fog.color.setRGB(heartState.fogColorR, 0.02, 0.02);
@@ -712,6 +760,8 @@ function animate() {
 
 		heartMaterials.forEach((mat) => {
 			mat.emissiveIntensity = currentGlow;
+			// Color shift based on oxygen level
+			mat.color.setRGB(1, heartState.oxygen, heartState.oxygen);
 		});
 
 		// Update diagnostic glow light

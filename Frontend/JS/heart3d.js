@@ -167,9 +167,11 @@ const LERP_SPEED = 0.04;
 
 // Track whether a diagnosis is active
 let diagnosisActive = false;
+let insideModeActive = false; // NEW: Inside the body mode flag
 
-// Store the base camera position for camera shake
+// Store the base camera position for camera shake and resets
 const baseCameraPos = new THREE.Vector3(0, 0, 5);
+const cameraCenterPos = new THREE.Vector3(0, 0, 5); // NEW: Interpolated center for camera
 
 // ============================================================
 //  updateHeartState — called when diagnosis completes
@@ -189,6 +191,57 @@ function updateHeartState(level) {
 
 // Expose globally so script.js can call it if needed
 window.updateHeartState = updateHeartState;
+
+// ============================================================
+//  INSIDE THE BODY MODE
+// ============================================================
+function activateInsideMode() {
+	if (insideModeActive) return;
+	insideModeActive = true;
+
+	console.log("Entering Inside the Body Mode...");
+
+	// 1. Cinematic Camera Move
+	gsap.to(cameraCenterPos, {
+		x: 0,
+		y: 0,
+		z: 0.3,
+		duration: 2.5,
+		ease: "power2.inOut",
+	});
+
+	// 2. Lighting & Atmosphere Change
+	// We'll let the animate loop handle the actual fog/color lerping via heartTarget
+	// but we can force some immediate intensity here if desired.
+	gsap.to(ambientLight, { intensity: 1.2, duration: 2 });
+	
+	// Add blur feeling to canvas
+	gsap.to(canvas, { filter: "blur(1.5px)", duration: 3 });
+
+	// 3. Blood Flow Boost
+	heartTarget.bloodSpeed *= 2;
+	heartTarget.bloodIntensity = 1.0;
+}
+
+function deactivateInsideMode() {
+	if (!insideModeActive) return;
+	insideModeActive = false;
+
+	console.log("Exiting Inside the Body Mode...");
+
+	// Return camera to original position
+	gsap.to(cameraCenterPos, {
+		x: baseCameraPos.x,
+		y: baseCameraPos.y,
+		z: 3, // As requested for exit
+		duration: 1.5,
+		ease: "power3.out",
+	});
+
+	// Remove blur
+	gsap.to(canvas, { filter: "blur(0px)", duration: 1 });
+	gsap.to(ambientLight, { intensity: 0.6, duration: 1 });
+}
 
 // ============================================================
 //  LIVE HEART REACTION (Vitals Input)
@@ -224,10 +277,16 @@ document.getElementById("vital-hb")?.addEventListener("input", updateHeartFromIn
 window.addEventListener("diagnosisResult", (e) => {
 	const { urgency } = e.detail;
 	updateHeartState(urgency);
+
+	// Trigger Inside Mode if Critical
+	if (urgency === "CRITICAL") {
+		activateInsideMode();
+	}
 });
 
 window.addEventListener("diagnosisReset", () => {
 	updateHeartState("IDLE");
+	deactivateInsideMode();
 });
 
 // ============================================================
@@ -783,16 +842,17 @@ function animate() {
 
 		// ── 5. CAMERA SHAKE & DEPTH PUSH ──
 		// Push camera back proportionally based on fogDensity
-		const targetZ =
-			baseCameraPos.z + Math.max(0, (heartState.fogDensity - 0.02) * 12.5);
+		const targetZ = insideModeActive 
+			? cameraCenterPos.z 
+			: cameraCenterPos.z + Math.max(0, (heartState.fogDensity - 0.02) * 12.5);
 
 		if (heartTarget.speed >= 2.0) {
 			// Intensified sinusoidal camera shake for emergency feel
-			const shakeIntensity = (heartState.speed - 1.5) * 0.012;
+			const shakeIntensity = (heartState.speed - 1.5) * (insideModeActive ? 0.008 : 0.012);
 			camera.position.x =
-				baseCameraPos.x + Math.sin(time * 23.7) * shakeIntensity;
+				cameraCenterPos.x + Math.sin(time * 23.7) * shakeIntensity;
 			camera.position.y =
-				baseCameraPos.y + Math.sin(time * 19.3) * shakeIntensity;
+				cameraCenterPos.y + Math.sin(time * 19.3) * shakeIntensity;
 			camera.position.z +=
 				(targetZ +
 					Math.sin(time * 17.1) * shakeIntensity * 0.3 -
@@ -800,9 +860,14 @@ function animate() {
 				0.05;
 		} else {
 			// Smoothly return camera to base position and depth
-			camera.position.x += (baseCameraPos.x - camera.position.x) * 0.05;
-			camera.position.y += (baseCameraPos.y - camera.position.y) * 0.05;
+			camera.position.x += (cameraCenterPos.x - camera.position.x) * 0.05;
+			camera.position.y += (cameraCenterPos.y - camera.position.y) * 0.05;
 			camera.position.z += (targetZ - camera.position.z) * 0.05;
+		}
+
+		// Ensure camera always looks at heart center during intense modes
+		if (diagnosisActive || insideModeActive) {
+			camera.lookAt(window._heartGroup.position);
 		}
 
 		// ── 6. RIM LIGHT COLOR SHIFT (severity-driven) ──

@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // Force scroll to top on refresh to ensure intro starts at the correct position
+    window.scrollTo(0, 0);
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
     // Using a new key so it forces the intro to play even if you tested it before
     const introPlayed = localStorage.getItem("introPlayed_v2");
     const introScreen = document.getElementById("intro-screen");

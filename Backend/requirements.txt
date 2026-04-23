@@ -1,0 +1,4 @@
+experta>=1.9.4
+frozendict==1.2
+flask>=3.0
+flask-cors>=4.0

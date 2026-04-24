@@ -9,6 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (emergencyActive) return;
 		emergencyActive = true;
 		document.body.classList.add("emergency-mode");
+		document.body.classList.add("critical-mode");
+		
+		const cursor = document.getElementById("custom-cursor");
+		if (cursor) {
+			const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+			if (!isTouchDevice) {
+				cursor.classList.add("critical-mode-cursor");
+				cursor.style.opacity = "1";
+				cursor.style.display = "block";
+			}
+		}
+
 		requestAnimationFrame(() => {
 			emergencyAlert.classList.add("alert-visible");
 		});
@@ -18,6 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (!emergencyActive) return;
 		emergencyActive = false;
 		document.body.classList.remove("emergency-mode");
+		document.body.classList.remove("critical-mode");
+		
+		const cursor = document.getElementById("custom-cursor");
+		if (cursor) {
+			cursor.classList.remove("critical-mode-cursor");
+			cursor.style.opacity = "";
+		}
+
 		emergencyAlert.classList.remove("alert-visible");
 	}
 

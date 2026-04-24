@@ -81,6 +81,28 @@ a, button, input, select, label, .progress-step, .custom-checkbox, .custom-radio
 	will-change: transform, left, top;
 }
 
+#custom-cursor.critical-mode-cursor {
+	box-shadow: 0 0 25px red;
+	background: rgba(255, 50, 50, 1);
+	/* Base transform applied before inline styling in JS to enhance scale */
+}
+
+/* Fallback cursor if custom cursor is disabled/hidden */
+.critical-mode {
+	cursor: default !important;
+}
+
+.critical-mode a, 
+.critical-mode button, 
+.critical-mode input, 
+.critical-mode select, 
+.critical-mode label, 
+.critical-mode .progress-step, 
+.critical-mode .custom-checkbox, 
+.critical-mode .custom-radio {
+	cursor: pointer !important;
+}
+
 /* =============================================
    INTRO SCREEN
    ============================================= */

@@ -122,7 +122,11 @@
             </div>
         </section>
 
-        <!-- Input Form Section -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- INPUT FORM SECTION                              -->
+        <!-- All inputs are BOOLEAN checkboxes/radios.       -->
+        <!-- Field names EXACTLY match backend Working Memory -->
+        <!-- ═══════════════════════════════════════════════ -->
         <section id="assessment" class="fullscreen-section section-fade hidden-initial fade-in">
             <div class="container">
                 <h2 class="section-title scroll-reveal">Patient Data Entry</h2>
@@ -142,103 +146,110 @@
                         </div>
                         <div class="progress-line"></div>
                         <div class="progress-step" id="prog-3">
-                            <span class="step-icon">🧠</span>
+                            <span class="step-icon">📋</span>
                             <span class="step-text">Background</span>
+                        </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step" id="prog-4">
+                            <span class="step-icon">🎂</span>
+                            <span class="step-text">Age</span>
                         </div>
                     </div>
 
                     <div class="form-step-container">
                         
-                        <!-- ═══════════════════════════════════════ -->
-                        <!-- Step 1: Clinical Symptoms               -->
-                        <!-- ═══════════════════════════════════════ -->
+                        <!-- ═══════════════════════════════════ -->
+                        <!-- STEP 1: Clinical Symptoms            -->
+                        <!-- 10 boolean checkboxes                -->
+                        <!-- ═══════════════════════════════════ -->
                         <div class="step" id="step-1">
                             <div class="form-category">
                                 <h3>A. Clinical Symptoms</h3>
                                 <p class="form-hint">Select all symptoms the patient is currently experiencing.</p>
                                 <div class="checkbox-group">
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-shortness_of_breath" name="shortness_of_breath" data-category="symptoms">
+                                        <input type="checkbox" name="shortness_of_breath">
                                         <span class="custom-checkbox"></span>
                                         Shortness of breath
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-orthopnea" name="orthopnea" data-category="symptoms">
+                                        <input type="checkbox" name="orthopnea">
                                         <span class="custom-checkbox"></span>
                                         Orthopnea (difficulty breathing lying down)
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-edema" name="edema" data-category="symptoms">
+                                        <input type="checkbox" name="edema">
                                         <span class="custom-checkbox"></span>
                                         Edema (swelling in legs/ankles)
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-chest_pain" name="chest_pain" data-category="symptoms">
+                                        <input type="checkbox" name="chest_pain">
                                         <span class="custom-checkbox"></span>
                                         Chest pain
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-cough" name="cough" data-category="symptoms">
+                                        <input type="checkbox" name="cough">
                                         <span class="custom-checkbox"></span>
                                         Persistent cough
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-low_activity" name="low_activity" data-category="symptoms">
+                                        <input type="checkbox" name="low_activity">
                                         <span class="custom-checkbox"></span>
                                         Reduced physical activity tolerance
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-palpitations" name="palpitations" data-category="symptoms">
+                                        <input type="checkbox" name="palpitations">
                                         <span class="custom-checkbox"></span>
                                         Palpitations (irregular heartbeat sensation)
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-dizziness" name="dizziness" data-category="symptoms">
+                                        <input type="checkbox" name="dizziness">
                                         <span class="custom-checkbox"></span>
                                         Dizziness
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-syncope" name="syncope" data-category="symptoms">
+                                        <input type="checkbox" name="syncope">
                                         <span class="custom-checkbox"></span>
                                         Syncope (fainting or near-fainting)
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="sym-chest_tightness" name="chest_tightness" data-category="symptoms">
+                                        <input type="checkbox" name="chest_tightness">
                                         <span class="custom-checkbox"></span>
                                         Chest tightness
                                     </label>
                                 </div>
                             </div>
                             <div class="step-actions">
-                                <div></div> <!-- Spacer for flex layout -->
+                                <div></div>
                                 <button type="button" class="btn-primary" onclick="goToStep(2)">Next</button>
                             </div>
                         </div>
 
-                        <!-- ═══════════════════════════════════════ -->
-                        <!-- Step 2: Vital Signs (Boolean Flags)     -->
-                        <!-- ═══════════════════════════════════════ -->
+                        <!-- ═══════════════════════════════════ -->
+                        <!-- STEP 2: Vital Signs                  -->
+                        <!-- 12 boolean threshold checkboxes      -->
+                        <!-- ═══════════════════════════════════ -->
                         <div class="step" id="step-2" style="display: none;">
                             <div class="form-category">
                                 <h3>B. Vital Signs</h3>
-                                <p class="form-hint">Select all abnormal vital sign readings that apply to the patient.</p>
+                                <p class="form-hint">Select all abnormal vital sign readings that apply.</p>
 
                                 <!-- Blood Pressure -->
                                 <div class="vitals-subgroup">
                                     <span class="subgroup-label">Blood Pressure (Systolic)</span>
                                     <div class="checkbox-group">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-bp_gte_180" name="bp_gte_180" data-category="vitals">
+                                            <input type="checkbox" name="bp_ge_180">
                                             <span class="custom-checkbox"></span>
                                             BP ≥ 180 mmHg <span class="threshold-badge critical">Critical</span>
                                         </label>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-bp_140_179" name="bp_140_179" data-category="vitals">
+                                            <input type="checkbox" name="bp_140_179">
                                             <span class="custom-checkbox"></span>
                                             BP 140–179 mmHg <span class="threshold-badge high">High</span>
                                         </label>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-bp_lt_90" name="bp_lt_90" data-category="vitals">
+                                            <input type="checkbox" name="bp_lt_90">
                                             <span class="custom-checkbox"></span>
                                             BP &lt; 90 mmHg <span class="threshold-badge critical">Low</span>
                                         </label>
@@ -250,17 +261,17 @@
                                     <span class="subgroup-label">Heart Rate</span>
                                     <div class="checkbox-group">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-hr_gt_120" name="hr_gt_120" data-category="vitals">
+                                            <input type="checkbox" name="hr_ge_120">
                                             <span class="custom-checkbox"></span>
-                                            HR &gt; 120 bpm <span class="threshold-badge critical">Critical</span>
+                                            HR ≥ 120 bpm <span class="threshold-badge critical">Critical</span>
                                         </label>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-hr_100_120" name="hr_100_120" data-category="vitals">
+                                            <input type="checkbox" name="hr_100_120">
                                             <span class="custom-checkbox"></span>
                                             HR 100–120 bpm <span class="threshold-badge high">High</span>
                                         </label>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-hr_lt_50" name="hr_lt_50" data-category="vitals">
+                                            <input type="checkbox" name="hr_lt_50">
                                             <span class="custom-checkbox"></span>
                                             HR &lt; 50 bpm <span class="threshold-badge critical">Low</span>
                                         </label>
@@ -272,9 +283,9 @@
                                     <span class="subgroup-label">Respiratory Rate</span>
                                     <div class="checkbox-group">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-rr_gt_22" name="rr_gt_22" data-category="vitals">
+                                            <input type="checkbox" name="rr_ge_22">
                                             <span class="custom-checkbox"></span>
-                                            RR &gt; 22 breaths/min <span class="threshold-badge high">High</span>
+                                            RR ≥ 22 breaths/min <span class="threshold-badge high">High</span>
                                         </label>
                                     </div>
                                 </div>
@@ -284,17 +295,17 @@
                                     <span class="subgroup-label">Oxygen Saturation (SpO₂)</span>
                                     <div class="checkbox-group">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-spo2_lt_85" name="spo2_lt_85" data-category="vitals">
+                                            <input type="checkbox" name="spo2_lt_85">
                                             <span class="custom-checkbox"></span>
                                             SpO₂ &lt; 85% <span class="threshold-badge critical">Critical</span>
                                         </label>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-spo2_85_90" name="spo2_85_90" data-category="vitals">
+                                            <input type="checkbox" name="spo2_85_90">
                                             <span class="custom-checkbox"></span>
                                             SpO₂ 85–90% <span class="threshold-badge high">Low</span>
                                         </label>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-spo2_90_94" name="spo2_90_94" data-category="vitals">
+                                            <input type="checkbox" name="spo2_90_94">
                                             <span class="custom-checkbox"></span>
                                             SpO₂ 90–94% <span class="threshold-badge moderate">Mild</span>
                                         </label>
@@ -306,14 +317,14 @@
                                     <span class="subgroup-label">Other</span>
                                     <div class="checkbox-group">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-hemoglobin_lt_10" name="hemoglobin_lt_10" data-category="vitals">
+                                            <input type="checkbox" name="hemoglobin_lt_10">
                                             <span class="custom-checkbox"></span>
                                             Hemoglobin &lt; 10 g/dL <span class="threshold-badge high">Low</span>
                                         </label>
                                         <label class="checkbox-label">
-                                            <input type="checkbox" id="vital-temp_gt_38" name="temp_gt_38" data-category="vitals">
+                                            <input type="checkbox" name="temp_ge_38">
                                             <span class="custom-checkbox"></span>
-                                            Temperature &gt; 38°C <span class="threshold-badge moderate">Fever</span>
+                                            Temperature ≥ 38°C <span class="threshold-badge moderate">Fever</span>
                                         </label>
                                     </div>
                                 </div>
@@ -324,92 +335,87 @@
                             </div>
                         </div>
 
-                        <!-- ═══════════════════════════════════════ -->
-                        <!-- Step 3: Background & Age                -->
-                        <!-- ═══════════════════════════════════════ -->
+                        <!-- ═══════════════════════════════════ -->
+                        <!-- STEP 3: Background Information       -->
+                        <!-- 7 boolean checkboxes                 -->
+                        <!-- ═══════════════════════════════════ -->
                         <div class="step" id="step-3" style="display: none;">
                             <div class="form-category">
-                                <h3>C. Background & Age</h3>
-                                <p class="form-hint">Select all relevant medical history and age group.</p>
-
+                                <h3>C. Background Information</h3>
+                                <p class="form-hint">Select all relevant medical history.</p>
                                 <div class="checkbox-group bg-checkbox-group">
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-hypertension" name="hypertension" data-category="background">
+                                        <input type="checkbox" name="hypertension">
                                         <span class="custom-checkbox"></span>
                                         Hypertension
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-diabetes" name="diabetes" data-category="background">
+                                        <input type="checkbox" name="diabetes">
                                         <span class="custom-checkbox"></span>
                                         Diabetes
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-heart_disease" name="heart_disease" data-category="background">
+                                        <input type="checkbox" name="heart_disease">
                                         <span class="custom-checkbox"></span>
                                         Prior heart disease
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-obesity" name="obesity" data-category="background">
+                                        <input type="checkbox" name="obesity">
                                         <span class="custom-checkbox"></span>
                                         Obesity (BMI ≥ 30)
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-smoking" name="smoking" data-category="background">
-                                        <span class="custom-checkbox"></span>
-                                        Current or former smoker
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-family_history" name="family_history" data-category="background">
-                                        <span class="custom-checkbox"></span>
-                                        Family history of heart disease
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-previous_heart_attack" name="previous_heart_attack" data-category="background">
+                                        <input type="checkbox" name="previous_heart_attack">
                                         <span class="custom-checkbox"></span>
                                         Previous heart attack
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-chronic_lung_disease" name="chronic_lung_disease" data-category="background">
+                                        <input type="checkbox" name="chronic_lung_disease">
                                         <span class="custom-checkbox"></span>
                                         Chronic lung disease (e.g., COPD)
                                     </label>
                                     <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-kidney_disease" name="kidney_disease" data-category="background">
+                                        <input type="checkbox" name="kidney_disease">
                                         <span class="custom-checkbox"></span>
                                         Chronic kidney disease
                                     </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="bg-dilated_cardiomyopathy" name="dilated_cardiomyopathy" data-category="background">
-                                        <span class="custom-checkbox"></span>
-                                        Dilated cardiomyopathy
-                                    </label>
-                                </div>
-
-                                <!-- Age Category (Radio Buttons) -->
-                                <div class="age-category-group">
-                                    <span class="subgroup-label">Age Category</span>
-                                    <div class="radio-group">
-                                        <label class="radio-label">
-                                            <input type="radio" id="age-gt_60" name="age_category" value="age_gt_60">
-                                            <span class="custom-radio"></span>
-                                            Age &gt; 60 years
-                                        </label>
-                                        <label class="radio-label">
-                                            <input type="radio" id="age-40_60" name="age_category" value="age_40_60">
-                                            <span class="custom-radio"></span>
-                                            Age 40–60 years
-                                        </label>
-                                        <label class="radio-label">
-                                            <input type="radio" id="age-lt_40" name="age_category" value="age_lt_40">
-                                            <span class="custom-radio"></span>
-                                            Age &lt; 40 years
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
-                            <div class="step-error" id="error-3">Please select at least one input before submitting.</div>
                             <div class="step-actions dual-actions">
                                 <button type="button" class="btn-secondary" onclick="goToStep(2)">Back</button>
+                                <button type="button" class="btn-primary" onclick="goToStep(4)">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- ═══════════════════════════════════ -->
+                        <!-- STEP 4: Age Category                 -->
+                        <!-- 3 boolean checkboxes (pick one)      -->
+                        <!-- ═══════════════════════════════════ -->
+                        <div class="step" id="step-4" style="display: none;">
+                            <div class="form-category">
+                                <h3>D. Age Category</h3>
+                                <p class="form-hint">Select the patient's age group.</p>
+                                <div class="checkbox-group age-checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="age_ge_60">
+                                        <span class="custom-checkbox"></span>
+                                        Age ≥ 60 years
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="age_40_60">
+                                        <span class="custom-checkbox"></span>
+                                        Age 40–60 years
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="age_lt_40">
+                                        <span class="custom-checkbox"></span>
+                                        Age &lt; 40 years
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="step-error" id="error-submit">Please select at least one input before submitting.</div>
+                            <div class="step-actions dual-actions">
+                                <button type="button" class="btn-secondary" onclick="goToStep(3)">Back</button>
                                 <button type="submit" class="btn-primary analyze-btn" id="submit-btn" disabled>
                                     <span class="btn-text">Analyze Patient Data</span>
                                     <span class="btn-glow"></span>
@@ -422,13 +428,17 @@
             </div>
         </section>
 
-        <!-- Results Section -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- RESULTS SECTION                                 -->
+        <!-- Displays: disease, urgency, recommendation,     -->
+        <!--           confidence %, explain details          -->
+        <!-- ═══════════════════════════════════════════════ -->
         <section id="results" class="fullscreen-section hidden-initial fade-in">
             <div class="container">
                 <h2 class="section-title results-title">Diagnostic Results</h2>
 
                 <div class="results-layout">
-                    <!-- Dramatic Urgency Card -->
+                    <!-- Urgency Card -->
                     <div class="result-card dramatic-reveal" id="urgency-card">
                         <div class="urgency-indicator"></div>
                         <h2 class="urgency-title">Triage Status</h2>
@@ -455,12 +465,12 @@
                     <div class="details-card">
                         <h3>Primary Diagnosis</h3>
                         <div class="result-row">
-                            <span class="label">Condition</span>
-                            <span class="value" id="condition-value">--</span>
+                            <span class="label">Disease</span>
+                            <span class="value" id="disease-value">--</span>
                         </div>
-                        <div class="result-row" id="action-container">
-                            <span class="label">Suggested Action</span>
-                            <span class="value action-text" id="action-value">--</span>
+                        <div class="result-row">
+                            <span class="label">Recommendation</span>
+                            <span class="value action-text" id="recommendation-value">--</span>
                         </div>
                     </div>
 
@@ -476,18 +486,12 @@
                         </div>
                     </div>
 
-                    <!-- All Detected Conditions -->
-                    <div class="additional-conditions-panel" id="additional-panel" style="display:none;">
-                        <h3>All Detected Conditions</h3>
-                        <div id="additional-conditions-list"></div>
-                    </div>
-
                     <!-- Explanation Panel -->
                     <div class="explanation-panel">
                         <div class="explanation-header">
                             <h3>Expert System Reasoning</h3>
                             <button type="button" class="explain-toggle-btn" id="explain-toggle-btn">
-                                <span class="explain-toggle-text">Show Details</span>
+                                <span class="explain-toggle-text">Explain Result</span>
                                 <span class="explain-toggle-icon">▼</span>
                             </button>
                         </div>
@@ -502,18 +506,14 @@
                                 <div id="key-facts-list" class="key-facts-grid"></div>
                             </div>
                             <div class="explanation-detail-section">
-                                <h4>Clinical Notes</h4>
-                                <p id="clinical-notes-text" class="clinical-notes-text">--</p>
+                                <h4>All Detected Conditions</h4>
+                                <div id="all-conditions-list" class="all-conditions-list"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Engine Meta -->
                     <div class="engine-meta-panel">
-                        <div class="meta-item">
-                            <span class="meta-label">Fired Rules</span>
-                            <span class="meta-value" id="meta-rules-fired">--</span>
-                        </div>
                         <div class="meta-item">
                             <span class="meta-label">Confidence</span>
                             <span class="meta-value" id="meta-confidence">--</span>

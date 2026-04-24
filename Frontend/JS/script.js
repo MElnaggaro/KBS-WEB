@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (emergencyActive) return;
 		emergencyActive = true;
 		document.body.classList.add("emergency-mode");
-		// Slide the alert banner in
 		requestAnimationFrame(() => {
 			emergencyAlert.classList.add("alert-visible");
 		});
@@ -41,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	startBtn.addEventListener("click", () => {
 		assessmentSection.style.display = "flex";
-		// Add a tiny delay to allow display flex to apply before transitioning opacity
 		setTimeout(() => {
 			assessmentSection.classList.add("section-visible");
 			assessmentSection.scrollIntoView({ behavior: "smooth" });
@@ -55,9 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			resultsSection.style.display = "none";
 			assessmentSection.scrollIntoView({ behavior: "smooth" });
 
-			// Reset states
-			const urgencyCard = document.getElementById("urgency-card");
-			urgencyCard.className = "result-card dramatic-reveal";
+			// Reset urgency card
+			document.getElementById("urgency-card").className = "result-card dramatic-reveal";
 
 			// Reset confidence bar
 			const confBar = document.getElementById("confidence-bar-fill");
@@ -72,42 +69,38 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (toggleBtn) toggleBtn.classList.remove("expanded");
 		}, 500);
 
-		// Reset Multi-step Form
+		// Reset multi-step form to step 1
 		currentStep = 1;
-		document
-			.querySelectorAll(".step")
-			.forEach((s) => (s.style.display = "none"));
+		document.querySelectorAll(".step").forEach((s) => (s.style.display = "none"));
 		document.getElementById("step-1").style.display = "block";
 
-		// Reset Progress UI
+		// Reset progress bar
 		document.querySelectorAll(".progress-step").forEach((prog, idx) => {
 			prog.className = idx === 0 ? "progress-step active" : "progress-step";
 		});
 		document.querySelectorAll(".progress-line").forEach((line) => {
 			line.classList.remove("filled");
 		});
-		document
-			.querySelectorAll(".step-error")
-			.forEach((e) => (e.style.display = "none"));
+		document.querySelectorAll(".step-error").forEach((e) => (e.style.display = "none"));
 
 		// Disable submit button
 		updateSubmitButtonState();
 
-		// Deactivate emergency mode if active
+		// Deactivate emergency mode
 		deactivateEmergencyMode();
 
-		// Reset 3D heart to calm state
+		// Reset 3D heart
 		window.dispatchEvent(new CustomEvent("diagnosisReset"));
 	});
 
 	// ═════════════════════════════════════════════
-	// MULTI-STEP FORM CONTROLLER
+	// MULTI-STEP FORM CONTROLLER (4 steps)
 	// ═════════════════════════════════════════════
 	let currentStep = 1;
-	const totalSteps = 3;
+	const totalSteps = 4;
 
 	window.goToStep = function (nextStep) {
-		// Update progress bar UI
+		// Update progress bar
 		for (let i = 1; i <= totalSteps; i++) {
 			const prog = document.getElementById(`prog-${i}`);
 			if (i < nextStep) {
@@ -119,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 		}
 
-		// Update Progress Lines
+		// Update progress lines
 		const lines = document.querySelectorAll(".progress-line");
 		lines.forEach((line, index) => {
 			if (index < nextStep - 1) {
@@ -131,10 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		const oldStepEl = document.getElementById(`step-${currentStep}`);
 		const newStepEl = document.getElementById(`step-${nextStep}`);
-
-		// Hide old, show new with GSAP
-		// If moving forward: slide in from right
-		// If moving backward: slide in from left
 		const xOffset = nextStep > currentStep ? 50 : -50;
 
 		oldStepEl.style.display = "none";
@@ -152,24 +141,24 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 	// ═════════════════════════════════════════════
-	// SUBMIT BUTTON STATE — At least 1 input required
+	// SUBMIT BUTTON STATE — Disabled until input
 	// ═════════════════════════════════════════════
 	const submitBtn = document.getElementById("submit-btn");
-	const allInputs = document.querySelectorAll(
-		'#diagnosis-form input[type="checkbox"], #diagnosis-form input[type="radio"]'
+	const allCheckboxes = document.querySelectorAll(
+		'#diagnosis-form input[type="checkbox"]'
 	);
 
 	function updateSubmitButtonState() {
-		const hasAnyInput = Array.from(allInputs).some((input) => input.checked);
+		const hasAnyInput = Array.from(allCheckboxes).some((cb) => cb.checked);
 		submitBtn.disabled = !hasAnyInput;
 	}
 
-	allInputs.forEach((input) => {
-		input.addEventListener("change", updateSubmitButtonState);
+	allCheckboxes.forEach((cb) => {
+		cb.addEventListener("change", updateSubmitButtonState);
 	});
 
 	// ═════════════════════════════════════════════
-	// LOADING / ERROR UI CONTROLLERS
+	// LOADING / ERROR UI
 	// ═════════════════════════════════════════════
 	const loadingOverlay = document.getElementById("loading-overlay");
 	const errorToast = document.getElementById("error-toast");
@@ -187,8 +176,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.getElementById("error-title").textContent = title;
 		document.getElementById("error-detail").textContent = detail;
 		errorToast.classList.add("visible");
-
-		// Auto-dismiss after 8s
 		clearTimeout(showError._timer);
 		showError._timer = setTimeout(() => {
 			errorToast.classList.remove("visible");
@@ -200,102 +187,81 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 
 	// ═════════════════════════════════════════════
-	// DATA COLLECTION — Gather all boolean inputs
+	// DATA COLLECTION — Flat boolean payload
 	// ═════════════════════════════════════════════
 
 	function collectPatientData() {
-		const payload = {
-			symptoms: {},
-			vitals: {},
-			background: {},
-		};
+		const payload = {};
 
-		// Collect all checkboxes with data-category
+		// Collect ALL checkboxes in the form by name
 		document
-			.querySelectorAll('#diagnosis-form input[type="checkbox"][data-category]')
-			.forEach((input) => {
-				const category = input.dataset.category;
-				const name = input.name;
-				if (category && name) {
-					payload[category][name] = input.checked;
+			.querySelectorAll('#diagnosis-form input[type="checkbox"]')
+			.forEach((cb) => {
+				if (cb.name) {
+					payload[cb.name] = cb.checked;
 				}
 			});
-
-		// Collect age radio (goes into background)
-		const ageRadio = document.querySelector(
-			'input[name="age_category"]:checked'
-		);
-		if (ageRadio) {
-			// Set the selected age category to true, others to false
-			payload.background.age_gt_60 = ageRadio.value === "age_gt_60";
-			payload.background.age_40_60 = ageRadio.value === "age_40_60";
-			payload.background.age_lt_40 = ageRadio.value === "age_lt_40";
-		}
 
 		return payload;
 	}
 
 	// ═════════════════════════════════════════════
-	// FORM SUBMISSION — API INTEGRATION
+	// FORM SUBMISSION — API CALL
 	// ═════════════════════════════════════════════
 	const form = document.getElementById("diagnosis-form");
 
 	form.addEventListener("submit", async (e) => {
 		e.preventDefault();
 
-		// ─── 1. Collect data ─────────────────────
+		// 1. Collect flat boolean data
 		const payload = collectPatientData();
 
-		// ─── 2. Validate at least one True input ─
-		const hasInput = Object.values(payload).some((category) =>
-			Object.values(category).some((v) => v === true)
-		);
-
+		// 2. Validate at least one true
+		const hasInput = Object.values(payload).some((v) => v === true);
 		if (!hasInput) {
-			const errorEl = document.getElementById("error-3");
+			const errorEl = document.getElementById("error-submit");
 			if (errorEl) errorEl.style.display = "block";
 			return;
 		}
 
-		// ─── 3. Diagnostic scan animation ────────
+		// 3. Button loading state
 		const originalBtnHtml = submitBtn.innerHTML;
 		submitBtn.innerHTML = "<span>Analyzing...</span>";
 		submitBtn.style.opacity = "0.7";
 		submitBtn.style.pointerEvents = "none";
 
+		// 4. 3D heart scan animation (if available)
 		if (window.runDiagnosticScan) {
 			await window.runDiagnosticScan();
 		}
 
-		// ─── 4. Show loading state ───────────────
+		// 5. Show loading spinner
 		showLoading();
 
-		// ─── 5. Call backend API ─────────────────
+		// 6. Call backend
 		try {
 			const result = await diagnose(payload);
 
 			hideLoading();
-
-			// Restore button
 			submitBtn.innerHTML = originalBtnHtml;
 			submitBtn.style.opacity = "";
 			submitBtn.style.pointerEvents = "";
 
-			// ─── 6. Handle "no disease" response ─
-			if (result.primary_disease === null) {
+			// 7. Handle null disease
+			if (result.disease === null) {
 				renderNoDiagnosisResult(result);
 			} else {
 				renderResults(result);
 			}
 
-			// ─── 7. Emergency mode ───────────────
+			// 8. Emergency mode
 			if (result.urgency === "CRITICAL") {
 				activateEmergencyMode();
 			} else {
 				deactivateEmergencyMode();
 			}
 
-			// ─── 8. Update 3D heart ──────────────
+			// 9. Update 3D heart
 			const severityMap = { LOW: 0, MODERATE: 1, HIGH: 2, CRITICAL: 3 };
 			window.dispatchEvent(
 				new CustomEvent("diagnosisResult", {
@@ -307,12 +273,9 @@ document.addEventListener("DOMContentLoaded", () => {
 			);
 		} catch (error) {
 			hideLoading();
-
-			// Restore button
 			submitBtn.innerHTML = originalBtnHtml;
 			submitBtn.style.opacity = "";
 			submitBtn.style.pointerEvents = "";
-
 			showError("Diagnosis Failed", error.message);
 		}
 	});
@@ -327,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		let position = 0;
 		let className = "meter-indicator indicator-low";
 
-		switch (level.toUpperCase()) {
+		switch (level) {
 			case "LOW":
 				position = 0;
 				className = "meter-indicator indicator-low";
@@ -353,24 +316,25 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// ═════════════════════════════════════════════
-	// RENDER RESULTS (from backend response)
+	// RENDER RESULTS
 	// ═════════════════════════════════════════════
+	// Backend response: { disease, urgency, recommendation, confidence,
+	//                     confidence_level, explanation, disclaimer }
 
 	function renderResults(result) {
 		const urgencyCard = document.getElementById("urgency-card");
 		const urgencyValue = document.getElementById("urgency-value");
 		const urgencyAction = document.getElementById("urgency-action");
-		const conditionValue = document.getElementById("condition-value");
-		const actionValue = document.getElementById("action-value");
+		const diseaseValue = document.getElementById("disease-value");
+		const recommendationValue = document.getElementById("recommendation-value");
 
-		// ── Reset urgency card state ──
+		// Reset urgency card
 		urgencyCard.className = "result-card";
 
-		// ── Map urgency string to CSS state class ──
 		const urgencyLevel = (result.urgency || "LOW").toUpperCase();
 		const stateClass = `state-${urgencyLevel.toLowerCase()}`;
 
-		// ── Urgency action text mapping ──
+		// Urgency action mapping
 		const urgencyActions = {
 			CRITICAL: "Go to the emergency room immediately",
 			HIGH: "See a doctor today",
@@ -378,55 +342,50 @@ document.addEventListener("DOMContentLoaded", () => {
 			LOW: "Routine follow-up recommended",
 		};
 
-		// ── Set urgency card ──
+		// Set urgency card content
 		urgencyValue.textContent = urgencyLevel;
-		urgencyAction.textContent = urgencyActions[urgencyLevel] || result.recommendation;
+		urgencyAction.textContent = urgencyActions[urgencyLevel] || "";
 
-		// ── Set primary condition ──
-		conditionValue.textContent = result.primary_disease;
-		actionValue.textContent = result.recommendation;
+		// Set disease & recommendation
+		diseaseValue.textContent = result.disease;
+		recommendationValue.textContent = result.recommendation;
 
-		// ── Color the action text based on urgency ──
+		// Color recommendation text
 		const urgencyColors = {
 			critical: "var(--urgency-critical)",
 			high: "var(--urgency-high)",
 			moderate: "var(--urgency-moderate)",
 			low: "var(--urgency-low)",
 		};
-		actionValue.style.color =
+		recommendationValue.style.color =
 			urgencyColors[urgencyLevel.toLowerCase()] || "var(--color-text-main)";
 
-		// ── Render confidence ──
+		// Confidence
 		renderConfidence(result.confidence, result.confidence_level);
 
-		// ── Render additional conditions ──
-		renderAdditionalConditions(result.explanation);
-
-		// ── Render explanation ──
+		// Explanation
 		renderExplanation(result);
 
-		// ── Render engine meta ──
-		const firedRules = result.explanation?.fired_rules || [];
-		document.getElementById("meta-rules-fired").textContent = firedRules.length;
+		// Engine meta
 		document.getElementById("meta-confidence").textContent =
 			`${Math.round((result.confidence || 0) * 100)}% (${result.confidence_level || "—"})`;
 
-		// ── Update Severity Meter ──
+		// Severity meter
 		updateSeverityMeter(urgencyLevel);
 
-		// ── Update disclaimer ──
+		// Disclaimer
 		if (result.disclaimer) {
 			document.getElementById("disclaimer-text").textContent = result.disclaimer;
 		}
 
-		// ── Animate urgency card ──
+		// Animate urgency card
 		requestAnimationFrame(() => {
 			urgencyCard.classList.add(stateClass);
 			urgencyCard.classList.add("dramatic-reveal");
 			urgencyCard.classList.add("reveal-animate");
 		});
 
-		// ── Show results section ──
+		// Show results section
 		resultsSection.style.display = "flex";
 		setTimeout(() => {
 			resultsSection.classList.add("section-visible");
@@ -443,31 +402,23 @@ document.addEventListener("DOMContentLoaded", () => {
 		urgencyCard.className = "result-card";
 
 		document.getElementById("urgency-value").textContent = "CLEAR";
-		document.getElementById("urgency-action").textContent =
-			"No acute condition detected";
-		document.getElementById("condition-value").textContent =
-			"No Cardiac Condition Inferred";
-		document.getElementById("action-value").textContent =
-			result.message || "Please ensure all relevant data is provided.";
-		document.getElementById("action-value").style.color = "var(--urgency-low)";
+		document.getElementById("urgency-action").textContent = "No acute condition detected";
+		document.getElementById("disease-value").textContent = "No Cardiac Condition Inferred";
+		document.getElementById("recommendation-value").textContent =
+			result.recommendation || "Please ensure all relevant data is provided.";
+		document.getElementById("recommendation-value").style.color = "var(--urgency-low)";
 
-		// Show low confidence
 		renderConfidence(0, "None");
 
-		// Hide additional panels
-		document.getElementById("additional-panel").style.display = "none";
-
-		// Clear explanation
 		document.getElementById("explanation-summary").innerHTML =
 			`<div class="explanation-block primary-explanation">
 				<div class="explanation-icon">ℹ</div>
 				<div class="explanation-body">
 					<strong>No Condition Detected</strong>
-					<p>${result.message || "No cardiac condition could be inferred from the provided inputs."}</p>
+					<p>${result.recommendation || "No cardiac condition could be inferred."}</p>
 				</div>
 			</div>`;
 
-		document.getElementById("meta-rules-fired").textContent = "0";
 		document.getElementById("meta-confidence").textContent = "0%";
 
 		if (result.disclaimer) {
@@ -503,7 +454,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (levelEl) levelEl.textContent = level || "—";
 
 		if (barEl) {
-			// Determine color based on confidence
 			let barColor;
 			if (percentage >= 90) {
 				barColor = "linear-gradient(90deg, var(--urgency-high), var(--urgency-critical))";
@@ -523,62 +473,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// ═════════════════════════════════════════════
-	// RENDER ADDITIONAL CONDITIONS
-	// ═════════════════════════════════════════════
-
-	function renderAdditionalConditions(explanation) {
-		const panel = document.getElementById("additional-panel");
-		const list = document.getElementById("additional-conditions-list");
-		list.innerHTML = "";
-
-		const allConditions = explanation?.all_conditions || {};
-		const entries = Object.entries(allConditions);
-
-		// Show only if there are multiple conditions (skip the primary)
-		if (entries.length <= 1) {
-			panel.style.display = "none";
-			return;
-		}
-
-		panel.style.display = "block";
-
-		// Skip the first (primary) condition
-		entries.slice(1).forEach(([disease, cf]) => {
-			const card = document.createElement("div");
-			const cfPercent = Math.round(cf * 100);
-
-			// Estimate urgency from CF for coloring
-			let urgencyColor = "low";
-			if (cfPercent >= 90) urgencyColor = "critical";
-			else if (cfPercent >= 75) urgencyColor = "high";
-			else if (cfPercent >= 50) urgencyColor = "moderate";
-
-			card.className = `additional-condition-card urgency-border-${urgencyColor}`;
-			card.innerHTML = `
-                <div class="add-cond-header">
-                    <span class="add-cond-badge urgency-bg-${urgencyColor}">${cfPercent}%</span>
-                    <span class="add-cond-name">${disease}</span>
-                </div>
-                <div class="add-cond-cf-bar">
-                    <div class="add-cond-cf-fill" style="width: ${cfPercent}%"></div>
-                </div>
-            `;
-			list.appendChild(card);
-		});
-
-		// Staggered reveal for additional conditions
-		if (typeof gsap !== "undefined") {
-			gsap.from(list.querySelectorAll(".additional-condition-card"), {
-				opacity: 0,
-				y: 20,
-				duration: 0.6,
-				stagger: 0.15,
-				ease: "power2.out",
-			});
-		}
-	}
-
-	// ═════════════════════════════════════════════
 	// RENDER EXPLANATION
 	// ═════════════════════════════════════════════
 
@@ -586,15 +480,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		const summaryEl = document.getElementById("explanation-summary");
 		const explanation = result.explanation || {};
 
-		// ── Summary (always visible) ──
+		// Summary (always visible)
 		let html = `<div class="explanation-block primary-explanation">`;
 		html += `<div class="explanation-icon">⚕</div>`;
 		html += `<div class="explanation-body">`;
-		html += `<strong>Primary Finding — ${result.primary_disease}</strong>`;
+		html += `<strong>Primary Finding — ${result.disease}</strong>`;
 		html += `<p>${result.recommendation}</p>`;
 		html += `</div></div>`;
 
-		// Clinical notes
 		if (explanation.clinical_notes) {
 			html += `<div class="explanation-block secondary-explanation">`;
 			html += `<div class="explanation-icon">◆</div>`;
@@ -606,25 +499,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		summaryEl.innerHTML = html;
 
-		// ── Detailed explanation (toggle) ──
+		// Fired rules (detail panel)
 		const firedRules = explanation.fired_rules || [];
-		const keyFacts = explanation.key_facts || [];
-		const clinicalNotes = explanation.clinical_notes || "--";
-
-		// Fired rules
 		const firedRulesEl = document.getElementById("fired-rules-list");
 		if (firedRules.length > 0) {
 			firedRulesEl.innerHTML =
 				`<span class="rule-chain-label">Inference Chain: </span>` +
-				firedRules
-					.map((id) => `<span class="rule-id">${id}</span>`)
-					.join(" → ");
+				firedRules.map((id) => `<span class="rule-id">${id}</span>`).join(" → ");
 		} else {
-			firedRulesEl.innerHTML =
-				'<span class="rule-chain-label">No rules fired</span>';
+			firedRulesEl.innerHTML = '<span class="rule-chain-label">No rules fired</span>';
 		}
 
 		// Key facts
+		const keyFacts = explanation.key_facts || [];
 		const keyFactsEl = document.getElementById("key-facts-list");
 		if (keyFacts.length > 0) {
 			keyFactsEl.innerHTML = keyFacts
@@ -634,8 +521,28 @@ document.addEventListener("DOMContentLoaded", () => {
 			keyFactsEl.innerHTML = '<span class="key-fact-tag">No key facts</span>';
 		}
 
-		// Clinical notes
-		document.getElementById("clinical-notes-text").textContent = clinicalNotes;
+		// All conditions
+		const allConditions = explanation.all_conditions || {};
+		const conditionsEl = document.getElementById("all-conditions-list");
+		const condEntries = Object.entries(allConditions);
+		if (condEntries.length > 0) {
+			conditionsEl.innerHTML = condEntries
+				.map(([disease, cf]) => {
+					const cfPercent = Math.round(cf * 100);
+					let badgeColor = "low";
+					if (cfPercent >= 90) badgeColor = "critical";
+					else if (cfPercent >= 75) badgeColor = "high";
+					else if (cfPercent >= 50) badgeColor = "moderate";
+
+					return `<div class="all-cond-item">
+						<span class="add-cond-badge urgency-bg-${badgeColor}">${cfPercent}%</span>
+						<span class="all-cond-name">${disease}</span>
+					</div>`;
+				})
+				.join("");
+		} else {
+			conditionsEl.innerHTML = '<span class="all-cond-name">No conditions detected</span>';
+		}
 	}
 
 	// ═════════════════════════════════════════════
@@ -652,7 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 			const textEl = explainToggle.querySelector(".explain-toggle-text");
 			const iconEl = explainToggle.querySelector(".explain-toggle-icon");
-			if (textEl) textEl.textContent = isExpanded ? "Hide Details" : "Show Details";
+			if (textEl) textEl.textContent = isExpanded ? "Hide Details" : "Explain Result";
 			if (iconEl) iconEl.textContent = isExpanded ? "▲" : "▼";
 
 			if (isExpanded && typeof gsap !== "undefined") {

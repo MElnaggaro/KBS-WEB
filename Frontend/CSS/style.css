@@ -2010,6 +2010,34 @@ footer {
 	transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ── All Conditions List (Explain panel) ── */
+.all-conditions-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.all-cond-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.5rem 0.75rem;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: var(--border-radius-md);
+}
+
+.all-cond-name {
+	font-size: 0.9rem;
+	color: var(--color-text-main);
+	font-weight: 500;
+}
+
+/* ── Age Checkbox Group ── */
+.age-checkbox-group {
+	margin-top: 0.5rem;
+}
+
 /* ── Disabled Submit Button ── */
 #submit-btn:disabled {
 	opacity: 0.35;
@@ -2020,6 +2048,7 @@ footer {
 #submit-btn:disabled .btn-glow {
 	display: none;
 }
+
 
 /* =============================================
    EMERGENCY MODE — CRITICAL urgency full-screen alert

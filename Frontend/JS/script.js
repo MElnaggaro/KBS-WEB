@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	// MULTI-STEP FORM CONTROLLER (4 steps)
 	// ═════════════════════════════════════════════
 	let currentStep = 1;
-	const totalSteps = 4;
+	const totalSteps = 3;
 
 	window.goToStep = function (nextStep) {
 		// Update progress bar
@@ -147,14 +147,21 @@ document.addEventListener("DOMContentLoaded", () => {
 	const allCheckboxes = document.querySelectorAll(
 		'#diagnosis-form input[type="checkbox"]'
 	);
+	const allRadios = document.querySelectorAll(
+		'#diagnosis-form input[type="radio"]'
+	);
 
 	function updateSubmitButtonState() {
-		const hasAnyInput = Array.from(allCheckboxes).some((cb) => cb.checked);
-		submitBtn.disabled = !hasAnyInput;
+		const hasCheckbox = Array.from(allCheckboxes).some((cb) => cb.checked);
+		const hasRadio = Array.from(allRadios).some((r) => r.checked);
+		submitBtn.disabled = !(hasCheckbox || hasRadio);
 	}
 
 	allCheckboxes.forEach((cb) => {
 		cb.addEventListener("change", updateSubmitButtonState);
+	});
+	allRadios.forEach((r) => {
+		r.addEventListener("change", updateSubmitButtonState);
 	});
 
 	// ═════════════════════════════════════════════
@@ -193,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	function collectPatientData() {
 		const payload = {};
 
-		// Collect ALL checkboxes in the form by name
+		// Collect all checkboxes by name
 		document
 			.querySelectorAll('#diagnosis-form input[type="checkbox"]')
 			.forEach((cb) => {
@@ -201,6 +208,14 @@ document.addEventListener("DOMContentLoaded", () => {
 					payload[cb.name] = cb.checked;
 				}
 			});
+
+		// Collect age radio → 3 separate boolean fields
+		const selectedAge = document.querySelector(
+			'input[name="age_category"]:checked'
+		);
+		payload.age_ge_60 = selectedAge?.value === "age_ge_60" || false;
+		payload.age_40_60 = selectedAge?.value === "age_40_60" || false;
+		payload.age_lt_40 = selectedAge?.value === "age_lt_40" || false;
 
 		return payload;
 	}

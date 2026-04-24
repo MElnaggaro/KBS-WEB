@@ -149,11 +149,6 @@
                             <span class="step-icon">📋</span>
                             <span class="step-text">Background</span>
                         </div>
-                        <div class="progress-line"></div>
-                        <div class="progress-step" id="prog-4">
-                            <span class="step-icon">🎂</span>
-                            <span class="step-text">Age</span>
-                        </div>
                     </div>
 
                     <div class="form-step-container">
@@ -336,13 +331,13 @@
                         </div>
 
                         <!-- ═══════════════════════════════════ -->
-                        <!-- STEP 3: Background Information       -->
-                        <!-- 7 boolean checkboxes                 -->
+                        <!-- STEP 3: Background Information + Age  -->
+                        <!-- 7 background checkboxes + 3 age radios -->
                         <!-- ═══════════════════════════════════ -->
                         <div class="step" id="step-3" style="display: none;">
                             <div class="form-category">
                                 <h3>C. Background Information</h3>
-                                <p class="form-hint">Select all relevant medical history.</p>
+                                <p class="form-hint">Select all relevant medical history and age group.</p>
                                 <div class="checkbox-group bg-checkbox-group">
                                     <label class="checkbox-label">
                                         <input type="checkbox" name="hypertension">
@@ -380,42 +375,32 @@
                                         Chronic kidney disease
                                     </label>
                                 </div>
-                            </div>
-                            <div class="step-actions dual-actions">
-                                <button type="button" class="btn-secondary" onclick="goToStep(2)">Back</button>
-                                <button type="button" class="btn-primary" onclick="goToStep(4)">Next</button>
-                            </div>
-                        </div>
 
-                        <!-- ═══════════════════════════════════ -->
-                        <!-- STEP 4: Age Category                 -->
-                        <!-- 3 boolean checkboxes (pick one)      -->
-                        <!-- ═══════════════════════════════════ -->
-                        <div class="step" id="step-4" style="display: none;">
-                            <div class="form-category">
-                                <h3>D. Age Category</h3>
-                                <p class="form-hint">Select the patient's age group.</p>
-                                <div class="checkbox-group age-checkbox-group">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="age_ge_60">
-                                        <span class="custom-checkbox"></span>
-                                        Age ≥ 60 years
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="age_40_60">
-                                        <span class="custom-checkbox"></span>
-                                        Age 40–60 years
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="age_lt_40">
-                                        <span class="custom-checkbox"></span>
-                                        Age &lt; 40 years
-                                    </label>
+                                <!-- Age Category (mutually exclusive) -->
+                                <div class="age-category-group">
+                                    <span class="subgroup-label">Age Category (select one)</span>
+                                    <div class="radio-group">
+                                        <label class="radio-label">
+                                            <input type="radio" name="age_category" value="age_ge_60">
+                                            <span class="custom-radio"></span>
+                                            Age ≥ 60 years
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="age_category" value="age_40_60">
+                                            <span class="custom-radio"></span>
+                                            Age 40–60 years
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="age_category" value="age_lt_40">
+                                            <span class="custom-radio"></span>
+                                            Age &lt; 40 years
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="step-error" id="error-submit">Please select at least one input before submitting.</div>
                             <div class="step-actions dual-actions">
-                                <button type="button" class="btn-secondary" onclick="goToStep(3)">Back</button>
+                                <button type="button" class="btn-secondary" onclick="goToStep(2)">Back</button>
                                 <button type="submit" class="btn-primary analyze-btn" id="submit-btn" disabled>
                                     <span class="btn-text">Analyze Patient Data</span>
                                     <span class="btn-glow"></span>

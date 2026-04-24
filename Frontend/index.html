@@ -232,45 +232,47 @@
                                 <!-- Blood Pressure -->
                                 <div class="vitals-subgroup">
                                     <span class="subgroup-label">Blood Pressure (Systolic)</span>
-                                    <div class="checkbox-group">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="bp_ge_180">
-                                            <span class="custom-checkbox"></span>
+                                    <div class="radio-group" data-group="bp">
+                                        <label class="radio-label">
+                                            <input type="radio" name="bp" value="bp_ge_180">
+                                            <span class="custom-radio"></span>
                                             BP ≥ 180 mmHg <span class="threshold-badge critical">Critical</span>
                                         </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="bp_140_179">
-                                            <span class="custom-checkbox"></span>
+                                        <label class="radio-label">
+                                            <input type="radio" name="bp" value="bp_140_179">
+                                            <span class="custom-radio"></span>
                                             BP 140–179 mmHg <span class="threshold-badge high">High</span>
                                         </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="bp_lt_90">
-                                            <span class="custom-checkbox"></span>
+                                        <label class="radio-label">
+                                            <input type="radio" name="bp" value="bp_lt_90">
+                                            <span class="custom-radio"></span>
                                             BP &lt; 90 mmHg <span class="threshold-badge critical">Low</span>
                                         </label>
                                     </div>
+                                    <div class="group-deselect"><a href="#" class="clear-radio" data-target="bp" style="font-size:0.8rem; color:var(--color-primary); display:none; margin-top:0.5rem;text-decoration:none;">Clear Selection</a></div>
                                 </div>
 
                                 <!-- Heart Rate -->
                                 <div class="vitals-subgroup">
                                     <span class="subgroup-label">Heart Rate</span>
-                                    <div class="checkbox-group">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="hr_ge_120">
-                                            <span class="custom-checkbox"></span>
+                                    <div class="radio-group" data-group="hr">
+                                        <label class="radio-label">
+                                            <input type="radio" name="hr" value="hr_ge_120">
+                                            <span class="custom-radio"></span>
                                             HR ≥ 120 bpm <span class="threshold-badge critical">Critical</span>
                                         </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="hr_100_120">
-                                            <span class="custom-checkbox"></span>
+                                        <label class="radio-label">
+                                            <input type="radio" name="hr" value="hr_100_120">
+                                            <span class="custom-radio"></span>
                                             HR 100–120 bpm <span class="threshold-badge high">High</span>
                                         </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="hr_lt_50">
-                                            <span class="custom-checkbox"></span>
+                                        <label class="radio-label">
+                                            <input type="radio" name="hr" value="hr_lt_50">
+                                            <span class="custom-radio"></span>
                                             HR &lt; 50 bpm <span class="threshold-badge critical">Low</span>
                                         </label>
                                     </div>
+                                    <div class="group-deselect"><a href="#" class="clear-radio" data-target="hr" style="font-size:0.8rem; color:var(--color-primary); display:none; margin-top:0.5rem;text-decoration:none;">Clear Selection</a></div>
                                 </div>
 
                                 <!-- Respiratory Rate -->
@@ -288,23 +290,24 @@
                                 <!-- Oxygen Saturation -->
                                 <div class="vitals-subgroup">
                                     <span class="subgroup-label">Oxygen Saturation (SpO₂)</span>
-                                    <div class="checkbox-group">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="spo2_lt_85">
-                                            <span class="custom-checkbox"></span>
+                                    <div class="radio-group" data-group="spo2">
+                                        <label class="radio-label">
+                                            <input type="radio" name="spo2" value="spo2_lt_85">
+                                            <span class="custom-radio"></span>
                                             SpO₂ &lt; 85% <span class="threshold-badge critical">Critical</span>
                                         </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="spo2_85_90">
-                                            <span class="custom-checkbox"></span>
+                                        <label class="radio-label">
+                                            <input type="radio" name="spo2" value="spo2_85_90">
+                                            <span class="custom-radio"></span>
                                             SpO₂ 85–90% <span class="threshold-badge high">Low</span>
                                         </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="spo2_90_94">
-                                            <span class="custom-checkbox"></span>
+                                        <label class="radio-label">
+                                            <input type="radio" name="spo2" value="spo2_90_94">
+                                            <span class="custom-radio"></span>
                                             SpO₂ 90–94% <span class="threshold-badge moderate">Mild</span>
                                         </label>
                                     </div>
+                                    <div class="group-deselect"><a href="#" class="clear-radio" data-target="spo2" style="font-size:0.8rem; color:var(--color-primary); display:none; margin-top:0.5rem;text-decoration:none;">Clear Selection</a></div>
                                 </div>
 
                                 <!-- Other -->

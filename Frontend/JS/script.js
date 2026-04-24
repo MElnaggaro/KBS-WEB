@@ -204,10 +204,18 @@ document.addEventListener("DOMContentLoaded", () => {
 		document
 			.querySelectorAll('#diagnosis-form input[type="checkbox"]')
 			.forEach((cb) => {
-				if (cb.name) {
+				if (cb.name && cb.name !== "age_category") {
 					payload[cb.name] = cb.checked;
 				}
 			});
+
+		// Collect new vitals radios (bp, hr, spo2) which now give the payload key in `value`
+		["bp", "hr", "spo2"].forEach(groupName => {
+			const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+			if (selected) {
+				payload[selected.value] = true;
+			}
+		});
 
 		// Collect age radio → 3 separate boolean fields
 		const selectedAge = document.querySelector(
@@ -219,6 +227,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		return payload;
 	}
+
+	// ═════════════════════════════════════════════
+	// VITAL SIGNS RADIO GROUPS CLEAR SELECTION
+	// ═════════════════════════════════════════════
+	const radioGroups = ["bp", "hr", "spo2"];
+	radioGroups.forEach(group => {
+		const radios = document.querySelectorAll(`input[name="${group}"]`);
+		const clearBtn = document.querySelector(`.clear-radio[data-target="${group}"]`);
+		if (radios.length > 0 && clearBtn) {
+			radios.forEach(radio => {
+				radio.addEventListener("change", () => {
+					clearBtn.style.display = "block";
+				});
+			});
+			clearBtn.addEventListener("click", (e) => {
+				e.preventDefault();
+				radios.forEach(r => r.checked = false);
+				clearBtn.style.display = "none";
+				updateSubmitButtonState();
+			});
+		}
+	});
 
 	// ═════════════════════════════════════════════
 	// FORM SUBMISSION — API CALL
